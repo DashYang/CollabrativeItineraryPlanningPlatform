@@ -57,3 +57,10 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# my ignore list
+.classpath
+.fatjar
+.project
+.settings/*
+build/classes/*

@@ -68,11 +68,11 @@ public class WebSocketServer {
 			String start = "";
 			if (type.equals("addPOI") || type.equals("deletePOI")
 					|| type.equals("addLine") || type.equals("deleteLine")
-					|| type.equals("voteLine"))
+					|| type.equals("voteLine") || type.equals("updatePOI"))
 				start = operateJSON.get("start").toString();
 			String end = "";
 			if (type.equals("addLine") || type.equals("deleteLine")
-					|| type.equals("voteLine"))
+					|| type.equals("voteLine") || type.equals("updatePOI"))
 				end = operateJSON.get("end").toString();
 			String title = (String) operateJSON.get("title");
 			String content = (String) operateJSON.get("content");

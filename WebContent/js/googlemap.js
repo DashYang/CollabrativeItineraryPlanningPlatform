@@ -328,8 +328,8 @@ function updateNode(index) {
 	pair.push(index);
 	if (pair.length >= 2) {
 		var content = $("#POIContent").val();
-		addLineMessage(arrow[0], arrow[1], content);
-		arrow = null;
+		updateNodeMessage(pair[0], pair[1], content);
+		pair = null;
 	}
 }
 

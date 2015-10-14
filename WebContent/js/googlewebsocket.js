@@ -107,18 +107,7 @@ function deleteLineMessage(startIndex, endIndex, content) {
 }
 
 function updateNodeMessage(startIndex, endIndex, content) {
-	jsonMessage = createMessageLog(startIndex, endIndex, content, "updateNode");
-	// messageProcess(jsonMessage);
-	controlalgorithm(jsonMessage);
-	localMessageLog.push(jsonMessage);
-	if (isBroadMessage() == true) {
-		var message = JSON.stringify(localMessageLog.pop());
-		ws.send(message);
-	}
-}
-
-function updateNodeMessage(startIndex, endIndex, content) {
-	jsonMessage = createMessageLog(startIndex, endIndex, content, "addLine");
+	jsonMessage = createMessageLog(startIndex, endIndex, content, "updatePOI");
 	// messageProcess(jsonMessage);
 	controlalgorithm(jsonMessage);
 	localMessageLog.push(jsonMessage);
@@ -230,11 +219,11 @@ function messageProcess(message) {
 		deleteUser(message.user);
 		break;
 	case "message":
-		var name = message.user;
+		var name = message.user; 
 		var content = message.content;
 		updateMessageList(name, content);
 		break;
-	case "updateNode":
+	case "updatePOI":
 		updatePOIBasic(message);
 		break;
 	}
