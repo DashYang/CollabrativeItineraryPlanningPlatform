@@ -16,7 +16,7 @@ var lastUpdateId = -1;
 $("#toIssue").click(function() {
 	if (username != "")
 		location.href = "issue.jsp?username=" + username;
-})
+});
 
 function checkUserIdentity() {
 	username = getUrlParam("username");
@@ -51,7 +51,15 @@ function createMessageLog(var1, var2, var3, type) {
 		jsonMessage['start'] = position;
 		jsonMessage['title'] = title;
 		jsonMessage["content"] = index;
-	} else {
+	} else if (type == "updatePOI") {
+		index = var1;
+		type = var2;
+		content = var3;
+		jsonMessage["content"] = content;
+		jsonMessage['start'] = index;
+		jsonMessage['end'] = type;
+	}
+	else {
 		startIndex = var1;
 		endIndex = var2;
 		index = var3;
@@ -106,8 +114,19 @@ function deleteLineMessage(startIndex, endIndex, content) {
 	}
 }
 
-function updateNodeMessage(startIndex, endIndex, content) {
-	jsonMessage = createMessageLog(startIndex, endIndex, content, "updatePOI");
+//function updateNodeMessage(startIndex, endIndex, content) {
+//	jsonMessage = createMessageLog(startIndex, endIndex, content, "updatePOI");
+//	// messageProcess(jsonMessage);
+//	controlalgorithm(jsonMessage);
+//	localMessageLog.push(jsonMessage);
+//	if (isBroadMessage() == true) {
+//		var message = JSON.stringify(localMessageLog.pop());
+//		ws.send(message);
+//	}
+//}
+
+function updatePOIMessage(index , type , content) {
+	jsonMessage = createMessageLog(index, type, content, "updatePOI");
 	// messageProcess(jsonMessage);
 	controlalgorithm(jsonMessage);
 	localMessageLog.push(jsonMessage);

@@ -70,10 +70,20 @@ function deletePOIBasic(message) {
 	// updateLinelist();
 }
 
+//function updatePOIBasic(message) {
+//	var index = message.start;
+//	var targetIndex = getRealIndex(POINodes, index);
+//	POINodes[targetIndex].appendStateVector(message);
+//}
+
 function updatePOIBasic(message) {
 	var index = message.start;
-	var targetIndex = getRealIndex(POINodes, index);
-	POINodes[targetIndex].appendStateVector(message);
+	var type = message.end;
+	var doc = POINodes;
+	if(type == "line") 
+		doc = lineNodes;
+	var targetIndex = getRealIndex(doc, index);
+	doc[targetIndex].appendStateVector(message);
 }
 
 function updatePOINodeList() {
@@ -316,21 +326,29 @@ function addLine(index) {
 	}
 }
 var pair = null;
+//function updateNode(index) {
+//	if(pair == null) {
+//		pair = new Array();
+//	}
+//	var realIndex = getRealIndex(POINodes, index);
+//	var selectedPOI = POINodes[realIndex].item;
+//	$("#piclPOI").html("update:" + selectedPOI.getTitle());
+//	var button = "#u" + index;
+//	$(button).remove();
+//	pair.push(index);
+//	if (pair.length >= 2) {
+//		var content = $("#POIContent").val();
+//		updateNodeMessage(pair[0], pair[1], content);
+//		pair = null;
+//	}
+//}
+
 function updateNode(index) {
-	if(pair == null) {
-		pair = new Array();
-	}
 	var realIndex = getRealIndex(POINodes, index);
 	var selectedPOI = POINodes[realIndex].item;
-	$("#piclPOI").html("update:" + selectedPOI.getTitle());
-	var button = "#u" + index;
-	$(button).remove();
-	pair.push(index);
-	if (pair.length >= 2) {
-		var content = $("#POIContent").val();
-		updateNodeMessage(pair[0], pair[1], content);
-		pair = null;
-	}
+	var content = $("#POIContent").val();
+	$("#piclPOI").html("update:" + selectedPOI.getTitle() + " " + content);
+	updatePOIMessage(index, "node" , content);
 }
 
 $("#addLine").click(function() {

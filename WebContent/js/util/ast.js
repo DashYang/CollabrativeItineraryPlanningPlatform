@@ -46,18 +46,33 @@ function retracing(doc, message) {
 		doc[index].setValid(false); // 防止这里面没有节点因果先于
 		var stateVectors = doc[index].getStateVector();
 		var deletePOIFlag = false;
+		var content = "" , contentIndex = -1; 
 		for ( var vi in stateVectors) {
 			var stateVector = stateVectors[vi];
 			if (message == true || isHappenedBefore(stateVector, message)) {
 				if (stateVector.type == "addPOI"
 						|| stateVector.type == "addLine") {
 					doc[index].setValid(true);
+					content = stateVector.content;
 				} else if (stateVector.type == "deletePOI"
-						|| stateVector.type == "deleteLine" || stateVector.type == "updatePOI") {
+						|| stateVector.type == "deleteLine" /**|| stateVector.type == "updatePOI"**/) {
 					doc[index].setValid(false);
-					if (stateVector.type == "deletePOI" || stateVector.type == "updatePOI") {
+					if (stateVector.type == "deletePOI" /**|| stateVector.type == "updatePOI"**/) {
 						deletePOIFlag = true;
 					}
+				} else if (stateVector.type == "updatePOI") {
+					var stateVectorId = 0;
+					doc[index].setValid(true);
+					var m1sequnce = stateVector.timestamp;
+					if(stateVector.user == username) {
+						stateVectorId = ackHashMap[m1sequnce];
+					} else {
+						stateVectorId = message1.id;
+					}
+					if(stateVectorId == null || stateVectorId > contentIndex) {
+						contentIndex = stateVectorId;
+						content = stateVector.content;
+					}  
 				}
 			}
 		}
@@ -68,6 +83,7 @@ function retracing(doc, message) {
 			myItem = doc[index].item.line;
 		if (doc[index].getValid() == true) {
 			myItem.setVisible(true);
+			myItem.content = content;
 		} else {
 			myItem.setVisible(false);
 			if (deletePOIFlag == true) {
@@ -97,11 +113,7 @@ function displayNodes(doc, type) {
 }
 
 function controlalgorithm(message) {
-	var doc = POINodes;
-	if (message.type.indexOf("Line") > 0)
-		doc = lineNodes;
 
-//	retracing(doc, message);
 	retracing(lineNodes, message);
 	retracing(POINodes, message);
 	displayNodes(lineNodes, "Line");
