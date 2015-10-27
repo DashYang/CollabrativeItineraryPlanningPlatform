@@ -67,7 +67,7 @@ function retracing(doc, message) {
 					if(stateVector.user == username) {
 						stateVectorId = ackHashMap[m1sequnce];
 					} else {
-						stateVectorId = message1.id;
+						stateVectorId = stateVector.id;
 					}
 					if(stateVectorId == null || stateVectorId > contentIndex) {
 						contentIndex = stateVectorId;

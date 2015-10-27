@@ -42,10 +42,9 @@ html,body,#map-canvas {
 		</div>
 		<div class='row'>
 			<div class='col-md-8'>
-				<input id='POIContent' placeholder="content" type="time"></input> <input
+				<input id='POIContent' placeholder="content" type="text"></input> <input
 					id='POInfo' placeholder="POI"></input>
 				<button id="addPOI">add POI</button>
-				<button id="addLine">add line</button>
 				<br>
 				<span id='piclPOI'></span>
 				<div class='board'>
@@ -74,7 +73,7 @@ html,body,#map-canvas {
 					</h3>
 					<ul id='lineList' class="list-group">
 					</ul>
-					<button id="myItinerary">My Itinerary</button>
+		<!-- 		<button id="myItinerary">My Itinerary</button>  -->
 				</div>
 			</div>
 		</div>
@@ -103,8 +102,9 @@ html,body,#map-canvas {
 <script type="text/javascript" src="./js/util/node.js"></script>
 <script type="text/javascript" src="./js/util/queue.js"></script>
 <script type="text/javascript" src="./js/util/ast.js"></script>
-<script
-	src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBE6NUJDzJYX4DYBiUcfyQcaWy2o0pWRl4"
+  type="text/javascript"></script>
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBE6NUJDzJYX4DYBiUcfyQcaWy2o0pWRl4&libraries=places"></script>
 <script type="text/javascript" src="./js/googlemap.js"></script>
 <script type="text/javascript" src="./js/googlewebsocket.js"></script>
 <script type="text/javascript" src="./js/user.js"></script>

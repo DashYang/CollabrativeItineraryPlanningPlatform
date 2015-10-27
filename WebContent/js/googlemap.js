@@ -114,8 +114,10 @@ function updatePOINodeList() {
 	$('.deltePOIbuttoon').click(
 			function(e) {
 				var POId = $(this).attr("id").substr(1);
-				deletePOIMessage(POINodes[POId].item.getPosition(),
-						POINodes[POId].item.getTitle(), POId);
+				//首节点存在，需要偏移
+				var realIndex = getRealIndex(POINodes, POId);
+				deletePOIMessage(POINodes[realIndex].item.getPosition(),
+						POINodes[realIndex].item.getTitle(), POId);
 			});
 	$('.connectPOIbuttoon').click(function(e) {
 		var POId = $(this).attr("id").substr(1);
@@ -245,8 +247,10 @@ function updateLinelist() {
 			function(e) {
 				if (3 == e.which) { // 这 是右键单击事件
 					var lineId = $(this).attr("id").substr(1);
-					deleteLineMessage(lineNodes[lineId].item.start
-							.getPosition(), lineNodes[lineId].item.end
+					//首节点的存在，需要偏移
+					var realIndex = getRealIndex(lineNodes, lineId);
+					deleteLineMessage(lineNodes[realIndex].item.start
+							.getPosition(), lineNodes[realIndex].item.end
 							.getPosition(), lineId);
 				} else if (1 == e.which) { // 这 是左键单击事件
 					var lineId = $(this).attr("id").substr(1);
