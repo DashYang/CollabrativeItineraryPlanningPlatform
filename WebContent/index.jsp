@@ -9,14 +9,12 @@
 </head>
 <body>
 <div class="controls input-prepend">
-								<span class="add-on"><i class="icon-user"></i>
-								</span> <input type="text" name="loginName" id="loginName" placeholder="用户名">
-                        </div>
-                        <div class="controls">
-                            <button type="submit"
-                                    id="login">登录
-                            </button>
-                        </div>
+	<span class="add-on"><i class="icon-user"></i>
+	</span> <input type="text" name="loginName" id="loginName" placeholder="用户名">
+    </div>
+    <div class="controls">
+    	<button type="submit" id="login">登录</button>
+    </div>
 </body>
 </html>
 <script type="text/javascript">

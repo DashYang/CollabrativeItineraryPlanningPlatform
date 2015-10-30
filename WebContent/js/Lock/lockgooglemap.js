@@ -2,13 +2,10 @@ var map;
 var mouse_marker = new google.maps.Marker({});
 var service;
 var infowindow;
-var POIs = new Array();
-var Lines = new Array();
 var voteNumber = new Array();
 var date, city, group;
 // 初始化地图
 function initialize() {
-	checkMapIdentity();
 	map = new google.maps.Map(document.getElementById('map-canvas'), {
 		zoom : 10,
 		center : {
@@ -16,10 +13,12 @@ function initialize() {
 			lng : 121.491
 		}
 	});
-	locateMyCity(city);
+	checkMapIdentity();
 	checkUserIdentity();
-	loadingHistoryMessage();
+	addUser(username);
+	locateMyCity(city);
 	initGoogleAutoCompleteText();
+	lock_sync_method();
 }
 
 // 初始化补全框
@@ -65,60 +64,33 @@ function deletePOIBasic(message) {
 	var index = message.content;
 	var targetIndex = getRealIndex(POINodes, index);
 	POINodes[targetIndex].appendStateVector(message);
-	// deletePOIExtraEffect(index);
-	// updatePOINodeList();
-	// updateLinelist();
-}
-
-//function updatePOIBasic(message) {
-//	var index = message.start;
-//	var targetIndex = getRealIndex(POINodes, index);
-//	POINodes[targetIndex].appendStateVector(message);
-//}
-
-function updatePOIBasic(message) {
-	var index = message.start;
-	var type = message.end;
-	var doc = POINodes;
-	if(type == "line") 
-		doc = lineNodes;
-	var targetIndex = getRealIndex(doc, index);
-	doc[targetIndex].appendStateVector(message);
 }
 
 function updatePOINodeList() {
 	var listHtml = "";
-	var id = 0;
-	for (var index = 1; index < POINodes.length - 1 ; index += 1) {
-		if (POINodes[index].item.getVisible() == true) {
-			var deleteButton = "<button id='p"
-					+ id
-					+ "' type='button' class='deltePOIbuttoon btn btn-default btn-xs'>"
-					+ "x" + "</button>";
-			var connectButton = "<button id='c"
-					+ id
-					+ "' type='button' class='connectPOIbuttoon btn btn-default btn-xs'>"
-					+ "->" + "</button>";
-			var updateButtopm = "<button id='u" +
-						id +
-					"' type='button' class='updatePOIbuttoon btn btn-default btn-xs'>update</button>"
-			listHtml += "<li id='poi" + id
-					+ "'class='list-group-item list-group-item-info'>"
-					+ POINodes[index].item.getTitle() + " "
-					+ POINodes[index].item.content + deleteButton
-					+ connectButton + updateButtopm + "</li>";
-			id += 1;
-		}
+	for ( var index = 0; index < POINodes.length; index += 1) {
+		var deleteButton = "<button id='p"
+				+ POINodes[index].id
+				+ "' type='button' class='deltePOIbuttoon btn btn-default btn-xs'>"
+				+ "x" + "</button>";
+		var connectButton = "<button id='c"
+				+ POINodes[index].id
+				+ "' type='button' class='connectPOIbuttoon btn btn-default btn-xs'>"
+				+ "->" + "</button>";
+		var updateButtopm = "<button id='u"
+				+ POINodes[index].id
+				+ "' type='button' class='updatePOIbuttoon btn btn-default btn-xs'>update</button>"
+		listHtml += "<li id='poi" + POINodes[index].id
+				+ "'class='list-group-item list-group-item-info'>"
+				+ POINodes[index].title + " " + POINodes[index].content
+				+ deleteButton + connectButton + updateButtopm + "</li>";
 	}
 	$("#POIList").html(listHtml);
-	$('.deltePOIbuttoon').click(
-			function(e) {
-				var POId = $(this).attr("id").substr(1);
-				//首节点存在，需要偏移
-				var realIndex = getRealIndex(POINodes, POId);
-				deletePOIMessage(POINodes[realIndex].item.getPosition(),
-						POINodes[realIndex].item.getTitle(), POId);
-			});
+	$('.deltePOIbuttoon').click(function(e) {
+		var POId = $(this).attr("id").substr(1);
+		// 首节点存在，需要偏移
+		deletePOIMessage("", "", POId);
+	});
 	$('.connectPOIbuttoon').click(function(e) {
 		var POId = $(this).attr("id").substr(1);
 		addLine(POId);
@@ -129,15 +101,15 @@ function updatePOINodeList() {
 	});
 }
 
-function getRealIndex(doc, index) {
-	var targetIndex = 1;
-	for (; targetIndex < doc.length - 1; targetIndex += 1) {
-		if (index == 0 & doc[targetIndex].getValid() == true)
-			break;
-		if (doc[targetIndex].getValid() == true)
-			index -= 1;
+function clearMarkers() {
+	for ( var i in POINodes) {
+		POINodes[i].setMap(null);
 	}
-	return targetIndex;
+	
+	for ( var i in lineNodes) {
+		lineNodes[i].item.line.setMap(null);
+		lineNodes[i].item.line.setVisible(false);
+	}
 }
 
 function addPOIBasic(message) {
@@ -146,29 +118,11 @@ function addPOIBasic(message) {
 		position : latLng,
 		title : message.title,
 		content : message.content,
+		id : message.id
 	});
 	placeMarker(POIMarker, map);
-
-	node = new Node(POIMarker);
-	node.appendStateVector(message);
-
-	var index = 0;
-	for (index = POINodes.length - 2; index > 0; index -= 1) {
-		if (POINodes[index].getValid() == true) {
-			break;
-		}
-	}
-	var targetIndex = rangeScan(POINodes, index, message);
-	POINodes.splice(targetIndex, 0, node);
-
-	node.item.uuid = POINodes.length; // uuid
-
-	// node.setValid(true);
-	// POINodes.push(node);
 	map.panTo(latLng);
-
-	// updatePOINodeList();
-
+	POINodes.push(POIMarker);
 }
 
 // 文字搜索的回调函数，标记地点
@@ -188,38 +142,6 @@ function callback(results, status) {
 	}
 }
 
-// 对于POI添加监听事件，连线用
-function addListenerToPOIs() {
-	for (index in POINodes) {
-		google.maps.event
-				.addDomListener(POINodes[index].item, 'click', addLine);
-	}
-}
-
-// 清除监听
-function removeListenerToPOIs() {
-	for (index in POINodes) {
-		google.maps.event.clearListeners(POINodes[index].item, 'click');
-	}
-}
-
-// 根据经纬度找到POI
-function getSelectedPOI(latLng) {
-	for (index in POIs) {
-		if (POIs[index].getPosition().toUrlValue() == latLng.toUrlValue())
-			return POIs[index];
-	}
-	return null;
-}
-
-// 删除line（原子操作）
-function deleteLineBasic(message) {
-	var index = message.content;
-	var targetIndex = getRealIndex(lineNodes, index);
-	lineNodes[targetIndex].appendStateVector(message);
-	// lineNodes[index].item.line.setVisible(false);
-	// updateLinelist();
-}
 
 // 投票line
 function voteLineBasic(index) {
@@ -230,28 +152,21 @@ function voteLineBasic(index) {
 // 更新linelist
 function updateLinelist() {
 	var listHtml = "";
-	var id = 0;
-	for (var index = 1 ; index < lineNodes.length - 1 ; index += 1) {
-		if (lineNodes[index].item.line.getVisible() == true) {
-			listHtml += "<li id='l" + id
-					+ "' class='list-group-item list-group-item-success'>"
-					+ lineNodes[index].item.start.getTitle() + " to "
-					+ lineNodes[index].item.end.getTitle() + " "
-					+ lineNodes[index].item.content + "(" + voteNumber[index]
-					+ ")" + "</li>";
-			id += 1;
-		}
+	for ( var index = 0; index < lineNodes.length; index += 1) {
+		listHtml += "<li id='l" + lineNodes[index].item.line.id
+				+ "' class='list-group-item list-group-item-success'>"
+				+ lineNodes[index].item.start.getTitle() + " to "
+				+ lineNodes[index].item.end.getTitle() + " "
+				+ lineNodes[index].item.content
+				+ "</li>";
 	}
 	$("#lineList").html(listHtml);
 	$('.list-group-item-success').mousedown(
 			function(e) {
 				if (3 == e.which) { // 这 是右键单击事件
 					var lineId = $(this).attr("id").substr(1);
-					//首节点的存在，需要偏移
-					var realIndex = getRealIndex(lineNodes, lineId);
-					deleteLineMessage(lineNodes[realIndex].item.start
-							.getPosition(), lineNodes[realIndex].item.end
-							.getPosition(), lineId);
+					// 首节点的存在，需要偏移
+					deleteLineMessage("", "", lineId);
 				} else if (1 == e.which) { // 这 是左键单击事件
 					var lineId = $(this).attr("id").substr(1);
 					voteLineBasic(lineId);
@@ -261,14 +176,23 @@ function updateLinelist() {
 			});
 }
 
+function getRealIndex(doc, index) {
+	for ( var targetIndex = 0; targetIndex < doc.length; targetIndex += 1) {
+		if (doc[targetIndex].id == index)
+			break;
+	}
+	return targetIndex;
+}
+
 // 添加line(原子操作)
 function addLineBasic(message) {
 	var content = message.content;
-	var selectedStartPOI = POINodes[getRealIndex(POINodes, message.start)].item;
-	var selectedEndPOI = POINodes[getRealIndex(POINodes, message.end)].item;
-	$("#piclPOI").html(
-			"connect:" + selectedStartPOI.getTitle() + " to "
-					+ selectedEndPOI.getTitle());
+	var selectedStartPOI = POINodes[getRealIndex(POINodes, message.start)];
+	var selectedEndPOI = POINodes[getRealIndex(POINodes, message.end)];
+	$("#piclPOI")
+			.html(
+					"connect:" + selectedStartPOI.title + " to "
+							+ selectedEndPOI.title);
 	var lineSymbol = {
 		path : google.maps.SymbolPath.FORWARD_CLOSED_ARROW
 	};
@@ -280,7 +204,9 @@ function addLineBasic(message) {
 					icon : lineSymbol,
 					offset : '100%'
 				} ],
-				map : map
+				map : map,
+				id : message.id,
+				content : message.content
 			});
 
 	var newLine = new Object();
@@ -290,23 +216,12 @@ function addLineBasic(message) {
 	newLine['content'] = content;
 
 	node = new Node(newLine);
-	node.appendStateVector(message);
 
-	var index = 0;
-	for (index = lineNodes.length - 2; index > 0; index -= 1) {
-		if (lineNodes[index].getValid() == true) {
-			break;
-		}
-	}
-	var targetIndex = rangeScan(lineNodes, index, message);
-	lineNodes.splice(targetIndex, 0, node);
+	lineNodes.push(node);
 
-	// voteNumber.push(0);
-	// updateLinelist();
-	// removeListenerToPOIs();
 }
 
-//updateNode(原子操作)
+// updateNode(原子操作)
 function updateNodeBasic(message) {
 	var index = message.content;
 	var targetIndex = getRealIndex(POINodes, index);
@@ -317,9 +232,6 @@ var arrow = null;
 function addLine(index) {
 	if (arrow == null)
 		arrow = new Array();
-	var realIndex = getRealIndex(POINodes, index);
-	var selectedPOI = POINodes[realIndex].item;
-	$("#piclPOI").html("pick:" + selectedPOI.getTitle());
 	var button = "#c" + index;
 	$(button).remove();
 	arrow.push(index);
@@ -334,10 +246,10 @@ var pair = null;
 
 function updateNode(index) {
 	var realIndex = getRealIndex(POINodes, index);
-	var selectedPOI = POINodes[realIndex].item;
+	var selectedPOI = POINodes[realIndex];
 	var content = $("#POIContent").val();
 	$("#piclPOI").html("update:" + selectedPOI.getTitle() + " " + content);
-	updatePOIMessage(index, "node" , content);
+	updatePOIMessage(index, "node", content);
 }
 
 $("#addLine").click(function() {
@@ -387,4 +299,3 @@ function placeMarker(marker, map) {
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
-

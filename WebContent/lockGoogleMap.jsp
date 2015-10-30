@@ -1,4 +1,4 @@
- <%@ page language="java" contentType="text/html; charset=UTF-8"
+<%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -35,6 +35,7 @@ html,body,#map-canvas {
 		<div class='jumbotron'>
 			<h2>
 				<a href='background.jsp'>Background</a>
+				(Lock)
 			</h2>
 			<button type="submit" id="toIssue">对于该系统有更好的建议，请点击此处留言！</button>
 			<input type="checkbox" id="broadMessage" checked>广播</input> <!-- <input
@@ -101,11 +102,9 @@ html,body,#map-canvas {
 </html>
 <script type="text/javascript" src="./js/util/node.js"></script>
 <script type="text/javascript" src="./js/util/queue.js"></script>
-<script type="text/javascript" src="./js/util/ast.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBE6NUJDzJYX4DYBiUcfyQcaWy2o0pWRl4"
   type="text/javascript"></script>
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBE6NUJDzJYX4DYBiUcfyQcaWy2o0pWRl4&libraries=places"></script>
-<script type="text/javascript" src="./js/googlemap.js"></script>
-<script type="text/javascript" src="./js/googlewebsocket.js"></script>
+<script type="text/javascript" src="./js/Lock/lock.js"></script>
+<script type="text/javascript" src="./js/Lock/lockgooglemap.js"></script>
 <script type="text/javascript" src="./js/user.js"></script>
-<script type="text/javascript" src="./js/message.js"></script>
