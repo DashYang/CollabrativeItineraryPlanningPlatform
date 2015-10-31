@@ -22,6 +22,7 @@
 		<mapper class="cn.edu.fudan.mybaits.EventDAO"/>
 		<mapper class="cn.edu.fudan.mybaits.MessageLogDAO"/>
 		<mapper class="cn.edu.fudan.mybaits.LockReplicaDAO"/>
+		<mapper class="cn.edu.fudan.mybaits.ClientPullMessageLogDao"/>
 	</mappers>
 
 </configuration>

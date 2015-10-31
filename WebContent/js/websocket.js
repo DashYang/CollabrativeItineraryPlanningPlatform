@@ -13,7 +13,7 @@ var username = "";
 $("#toIssue").click(function () {
 	if(username != "")
 		location.href = "issue.jsp?username="+username;
-})
+});
 
 function checkUserIdentity() {
 	username = getUrlParam("username")
