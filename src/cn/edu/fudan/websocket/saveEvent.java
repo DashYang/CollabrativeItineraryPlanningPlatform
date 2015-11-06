@@ -61,7 +61,8 @@ public class saveEvent extends HttpServlet {
 			pw.close();
 		} else if(type.equals("getEvents")){
 			JSONObject json = new JSONObject();
-			List<Event> groups = Event.getList();
+			String groupId = request.getParameter("groupId");
+			List<Event> groups = Event.getList(groupId);
 			json.put("result", true);
 			json.put("list", groups);
 			PrintWriter pw = response.getWriter();

@@ -3,6 +3,7 @@ package cn.edu.fudan.mybaits;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 /**
@@ -15,6 +16,6 @@ public interface EventDAO {
 			+ " values (#{username},#{groupId},#{startDate},#{endDate},#{city},#{event},#{user_status},#{event_status})")
 	public int insert(Event event);
 	
-	@Select("select * from events")
-	public List<Event> getList();
+	@Select("select * from events where `groupId` = #{groupId}")
+	public List<Event> getList(@Param(value="groupId") String groupId);
 }

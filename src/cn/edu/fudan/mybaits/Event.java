@@ -129,12 +129,13 @@ public class Event implements EntityOperation{
 		return flag;
 	}
 	
-	public static List<Event> getList() {
+	public static List<Event> getList(String groupId) {
 		List<Event> list = new LinkedList<Event>();
 		try {
 			SqlSession session = DAOManager.getSession();
 			EventDAO eventDAO = session.getMapper(EventDAO.class);
-			list = eventDAO.getList();
+			System.out.println(groupId);
+			list = eventDAO.getList(groupId);
 
 			session.commit();
 			session.close();

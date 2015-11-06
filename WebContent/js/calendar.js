@@ -68,6 +68,7 @@ function updateEventList(groupName) {
         dataType: "json",//返回json格式的数据
         data: {
             type : "getEvents",
+            groupId : groupId
         },
         success: function (jsonData) {
         	if (jsonData.result == true) {
