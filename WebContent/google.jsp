@@ -99,6 +99,7 @@ html,body,#map-canvas {
 	</div><!-- /.modal -->
 </body>
 </html>
+<script type="text/javascript" src="./js/experiment/time.js"></script>
 <script type="text/javascript" src="./js/util/node.js"></script>
 <script type="text/javascript" src="./js/util/queue.js"></script>
 <script type="text/javascript" src="./js/util/ast.js"></script>

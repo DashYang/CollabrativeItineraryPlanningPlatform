@@ -129,6 +129,11 @@ function controlalgorithm(message) {
 
 	updatePOINodeList();
 	updateLinelist();
+	
+	//
+	if(message.user == username)
+		attachEndTime();
+	//
 }
 
 // Torder(newMessage) < Torder(excuteMessage)
