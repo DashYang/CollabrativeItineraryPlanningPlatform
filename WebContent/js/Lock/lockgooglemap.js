@@ -89,6 +89,11 @@ function updatePOINodeList() {
 	$('.deltePOIbuttoon').click(function(e) {
 		var POId = $(this).attr("id").substr(1);
 		// 首节点存在，需要偏移
+
+		//
+		attachStartTime("deletePOI:" + POId);
+		//
+		
 		deletePOIMessage("", "", POId);
 	});
 	$('.connectPOIbuttoon').click(function(e) {
@@ -135,6 +140,11 @@ function callback(results, status) {
 			var latLng = new Object();
 			latLng['G'] = place.geometry.location.lat();
 			latLng['K'] = place.geometry.location.lng();
+
+			//
+			attachStartTime("addPOI:" + place.name);
+			//
+			
 			addPOIMessage(latLng, place.name, content);
 		}
 	} else {
@@ -166,6 +176,9 @@ function updateLinelist() {
 				if (3 == e.which) { // 这 是右键单击事件
 					var lineId = $(this).attr("id").substr(1);
 					// 首节点的存在，需要偏移
+					//
+					attachStartTime("deleteline:" + lineId);
+					//
 					deleteLineMessage("", "", lineId);
 				} else if (1 == e.which) { // 这 是左键单击事件
 					var lineId = $(this).attr("id").substr(1);
@@ -237,6 +250,10 @@ function addLine(index) {
 	arrow.push(index);
 	if (arrow.length >= 2) {
 		var content = $("#POIContent").val();
+		//
+		attachStartTime("addLine:" + arrow[0] + "to" + arrow[1]);
+		//
+		
 		addLineMessage(arrow[0], arrow[1], content);
 		arrow = null;
 	}
@@ -249,6 +266,11 @@ function updateNode(index) {
 	var selectedPOI = POINodes[realIndex];
 	var content = $("#POIContent").val();
 	$("#piclPOI").html("update:" + selectedPOI.getTitle() + " " + content);
+
+	//
+	attachStartTime("updatePOI:" + selectedPOI.getTitle() + " " + content); 
+	//
+	
 	updatePOIMessage(index, "node", content);
 }
 

@@ -59,6 +59,7 @@ public class LockWebSocketServer {
 		String date = (String) operateJSON.get("date");
 		String city = (String) operateJSON.get("city");
 		String group = (String) operateJSON.get("group");
+		String user = (String) operateJSON.get("user");
 		if (operateJSON.get("type").equals("connect")
 				|| operateJSON.get("type").equals("close")) {
 			List list = LockReplica.getItineraryByMapInfo(date, city, group);
@@ -107,6 +108,7 @@ public class LockWebSocketServer {
 				List<LockReplica> list = LockReplica.getItineraryByMapInfo(date, city, group);
 				JSONObject result = new JSONObject();
 				result.put("list", list);
+				result.put("user", user);
 				for (Session otherUser : onlineUsers) {
 					otherUser.getBasicRemote().sendText(result.toString());
 				}

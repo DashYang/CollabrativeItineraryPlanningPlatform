@@ -100,6 +100,7 @@ html,body,#map-canvas {
 	</div><!-- /.modal -->
 </body>
 </html>
+<script type="text/javascript" src="./js/experiment/time.js"></script>
 <script type="text/javascript" src="./js/util/node.js"></script>
 <script type="text/javascript" src="./js/util/queue.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBE6NUJDzJYX4DYBiUcfyQcaWy2o0pWRl4"

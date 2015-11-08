@@ -203,6 +203,11 @@ function messageProcess(message) {
 	}
 	updatePOINodeList();
 	updateLinelist();
+	
+	//
+	if(message.user == username)
+		attachEndTime();
+	//
 }
 
 ws.onmessage = function(evt) {
