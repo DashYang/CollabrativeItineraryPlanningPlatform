@@ -54,12 +54,13 @@ public class ClientPullMessage extends HttpServlet {
 		String type = (String) operateJSON.get("type");
 		int lastUpdateId = operateJSON.getInt("lastUpdateId");
 		JSONObject json = new JSONObject();
-		List<ClientPullMessageLog> messageLogs = ClientPullMessageLog.getItineraryByMapInfo(date, city, group, lastUpdateId);
+		List<ClientPullMessageLog> messageLogs = null;
 		if(type.equals("getMessageLog")) {
-			
+			messageLogs = ClientPullMessageLog.getItineraryByMapInfo(date, city, group, lastUpdateId);
 		} else {
 			int timestamp = operateJSON.getInt("timestamp");
 			String user = (String) operateJSON.get("user");
+			messageLogs = ClientPullMessageLog.getItineraryByMapInfo(date, city, group, lastUpdateId,user);
 			String start = "";
 			if (type.equals("addPOI") || type.equals("deletePOI")
 					|| type.equals("addLine") || type.equals("deleteLine")

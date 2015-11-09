@@ -184,12 +184,26 @@ public class ClientPullMessageLog implements EntityOperation{
 		return saveId;
 	}
 	
+	public static List<ClientPullMessageLog> getItineraryByMapInfo(String date , String city , String group,int lastUpdateId, String user) {
+		List<ClientPullMessageLog> list = new LinkedList<ClientPullMessageLog>();
+		try {
+			SqlSession session = DAOManager.getSession();
+			ClientPullMessageLogDao messageLogDAO = session.getMapper(ClientPullMessageLogDao.class);
+			list = messageLogDAO.getMessageByMapInfo(date, city, group,lastUpdateId,user);
+			session.commit();
+			session.close();
+		} catch (Exception e) {
+			System.out.println(e.toString());
+		}
+		return list;
+	}
+	
 	public static List<ClientPullMessageLog> getItineraryByMapInfo(String date , String city , String group,int lastUpdateId) {
 		List<ClientPullMessageLog> list = new LinkedList<ClientPullMessageLog>();
 		try {
 			SqlSession session = DAOManager.getSession();
 			ClientPullMessageLogDao messageLogDAO = session.getMapper(ClientPullMessageLogDao.class);
-			list = messageLogDAO.getMessageByMapInfo(date, city, group,lastUpdateId);
+			list = messageLogDAO.getMessageByMapInfoExceptUser(date, city, group,lastUpdateId);
 			session.commit();
 			session.close();
 		} catch (Exception e) {

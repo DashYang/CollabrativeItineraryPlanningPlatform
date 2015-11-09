@@ -13,4 +13,15 @@ function attachEndTime() {
 	timeObject.endTime = endTime;
 	front += 1;
 	console.log(timeObject.tag + ":" + (timeObject.endTime - timeObject.startTime));
+//	console.log(getResult());
+}
+
+function getResult() {
+	var str = "";
+	for(var index in timeArray) {
+		var timeObject = timeArray[index];
+		str += (timeObject.endTime - timeObject.startTime) + ",";
+	}
+	str = str.substring(0 , str.length-1);
+	return str;
 }

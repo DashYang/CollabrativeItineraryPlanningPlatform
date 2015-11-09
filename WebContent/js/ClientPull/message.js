@@ -55,7 +55,8 @@ function send(message) {
 				var list = jsonData.list;
 				for (listIndex in list) {
 					remoteMessageLog.push(list[listIndex]);
-					controlalgorithm(list[listIndex]);
+					if(list[listIndex].type != "ack")
+						controlalgorithm(list[listIndex]);
 					if (list[listIndex].user == username) {
 						if (list[listIndex].timestamp > timestamp) {
 							timestamp = list[listIndex].timestamp;
@@ -172,7 +173,6 @@ function addPOIMessage(latLng, title, content) {
 
 function deletePOIMessage(latLng, title, content) {
 	jsonMessage = createMessageLog(latLng, title, content, "deletePOI");
-	// messageProcess(jsonMessage);
 	controlalgorithm(jsonMessage);
 	localMessageLog.push(jsonMessage);
 	if (isBroadMessage() == true) {
@@ -183,7 +183,6 @@ function deletePOIMessage(latLng, title, content) {
 
 function addLineMessage(startIndex, endIndex, content) {
 	jsonMessage = createMessageLog(startIndex, endIndex, content, "addLine");
-	// messageProcess(jsonMessage);
 	controlalgorithm(jsonMessage);
 	localMessageLog.push(jsonMessage);
 	if (isBroadMessage() == true) {
@@ -194,7 +193,6 @@ function addLineMessage(startIndex, endIndex, content) {
 
 function deleteLineMessage(startIndex, endIndex, content) {
 	jsonMessage = createMessageLog(startIndex, endIndex, content, "deleteLine");
-	// messageProcess(jsonMessage);
 	controlalgorithm(jsonMessage);
 	localMessageLog.push(jsonMessage);
 	if (isBroadMessage() == true) {
@@ -205,7 +203,6 @@ function deleteLineMessage(startIndex, endIndex, content) {
 
 function updatePOIMessage(index , type , content) {
 	jsonMessage = createMessageLog(index, type, content, "updatePOI");
-	// messageProcess(jsonMessage);
 	controlalgorithm(jsonMessage);
 	localMessageLog.push(jsonMessage);
 	if (isBroadMessage() == true) {
@@ -216,7 +213,6 @@ function updatePOIMessage(index , type , content) {
 // 投票
 function voteLineMessage(startLatLng, endLatLng) {
 	jsonMessage = createMessageLog(startLatLng, endLatLng, "vote", "voteLine");
-	// messageProcess(jsonMessage);
 	controlalgorithm(jsonMessage);
 	localMessageLog.push(jsonMessage);
 	if (isBroadMessage() == true) {
