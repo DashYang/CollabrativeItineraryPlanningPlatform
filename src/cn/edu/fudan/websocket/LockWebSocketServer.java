@@ -76,13 +76,12 @@ public class LockWebSocketServer {
 			String content = (String) operateJSON.get("content");
 			String start = operateJSON.get("start").toString();
 			String end = operateJSON.get("end").toString();
-			Date nowDate = new Date();
-			Timestamp receiveTime = new Timestamp(nowDate.getTime());
+			long receiveTime = (long) operateJSON.get("receiveTime");
 			if (type.equals("addPOI") || type.equals("addLine")) {
-				LockReplica lockReplica = new LockReplica(date, city, group, start, end, type, title, content, receiveTime.toString());
+				LockReplica lockReplica = new LockReplica(date, city, group, start, end, type, title, content, receiveTime);
 				lockReplica.save();
 			} else if(type.equals("deletePOI") || type.equals("deleteLine")) {
-				LockReplica lockReplica = new LockReplica(date, city, group, start, end, type, title, content, receiveTime.toString());
+				LockReplica lockReplica = new LockReplica(date, city, group, start, end, type, title, content, receiveTime);
 				lockReplica.delete();
 				if(type.equals("deletePOI")){
 					List<LockReplica> list = LockReplica.getItineraryByMapInfo(date, city, group);
@@ -100,7 +99,7 @@ public class LockWebSocketServer {
 					}
 				}
 			} else{
-				LockReplica lockReplica = new LockReplica(date, city, group, start, end, type, title, content, receiveTime.toString());
+				LockReplica lockReplica = new LockReplica(date, city, group, start, end, type, title, content, receiveTime);
 				lockReplica.update();
 			}
 			try {
@@ -109,6 +108,8 @@ public class LockWebSocketServer {
 				JSONObject result = new JSONObject();
 				result.put("list", list);
 				result.put("user", user);
+				result.put("receiveTime", receiveTime);
+				result.put("type", type);
 				for (Session otherUser : onlineUsers) {
 					otherUser.getBasicRemote().sendText(result.toString());
 				}

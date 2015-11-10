@@ -154,7 +154,8 @@ function transArrayToObject(message) {
 		start : message["start"],
 		title :  message["title"],
 		content : message["content"],
-		end : message["end"]
+		end : message["end"],
+		receiveTime	:new Date().getTime()
 	};
 	console.log(message);
 	console.log(target);

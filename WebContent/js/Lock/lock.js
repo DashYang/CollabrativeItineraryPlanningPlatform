@@ -40,6 +40,7 @@ function createMessageLog(var1, var2, var3, type) {
 	jsonMessage["group"] = group;
 	jsonMessage["type"] = type;
 	jsonMessage["user"] = username;
+	jsonMessage["receiveTime"] = new Date().getTime();
 	if (type == "addPOI") {
 		latLng = var1;
 		title = var2;
@@ -169,6 +170,7 @@ ws.onopen = function() {
 	jsonMessage["group"] = group;
 	jsonMessage["user"] = username;
 	jsonMessage["type"] = "connect";
+	
 	console.log(date + " " + city + " " + group);
 	var jsonMessageString = JSON.stringify(jsonMessage);
 	ws.send(jsonMessageString);
@@ -207,6 +209,8 @@ function messageProcess(message) {
 	//
 	if(message.user == username)
 		attachEndTime();
+	else if(message.type!=null)
+		attachRemoteTime(message.receiveTime , message.type);
 	//
 }
 

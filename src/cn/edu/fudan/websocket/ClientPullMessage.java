@@ -72,9 +72,7 @@ public class ClientPullMessage extends HttpServlet {
 				end = operateJSON.get("end").toString();
 			String title = (String) operateJSON.get("title");
 			String content = (String) operateJSON.get("content");
-
-			Date nowDate = new Date();
-			Timestamp receiveTime = new Timestamp(nowDate.getTime());
+			long receiveTime = (long) operateJSON.get("receiveTime");
 			
 			System.out.println(timestamp + " " + date + " " + city + " "
 					+ group + " " + user + " " + type + " " + start + " " + end

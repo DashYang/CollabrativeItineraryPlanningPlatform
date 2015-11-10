@@ -20,7 +20,7 @@ public class LockReplica implements EntityOperation{
 	private String type;
 	private String title;
 	private String content;
-	private String receiveTime;
+	private long receiveTime;
 	
 	public LockReplica() {
 		super();
@@ -33,12 +33,12 @@ public class LockReplica implements EntityOperation{
 		this.type = "";
 		this.title = "";
 		this.content = "";
-		this.receiveTime = "";
+		this.receiveTime = 0;
 	}
 	
 	public LockReplica(String date, String city, String group,
 			String start, String end, String type, String title,
-			String content, String receiveTime) {
+			String content, long receiveTime) {
 		super();
 		this.date = date;
 		this.city = city;
@@ -104,10 +104,10 @@ public class LockReplica implements EntityOperation{
 	public void setContent(String content) {
 		this.content = content;
 	}
-	public String getReceiveTime() {
+	public long getReceiveTime() {
 		return receiveTime;
 	}
-	public void setReceiveTime(String receiveTime) {
+	public void setReceiveTime(long receiveTime) {
 		this.receiveTime = receiveTime;
 	}
 

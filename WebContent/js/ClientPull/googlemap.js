@@ -132,6 +132,16 @@ function updatePOINodeList() {
 	});
 }
 
+function deletePOIButtonOfAgent(POId) {
+	//首节点存在，需要偏移
+	var realIndex = getRealIndex(POINodes, POId);
+	//
+	attachStartTime("deletePOI:" + POINodes[realIndex].item.getTitle());
+	//
+	deletePOIMessage(POINodes[realIndex].item.getPosition(),
+			POINodes[realIndex].item.getTitle(), POId);
+}
+
 function getRealIndex(doc, index) {
 	var targetIndex = 1;
 	for (; targetIndex < doc.length - 1; targetIndex += 1) {

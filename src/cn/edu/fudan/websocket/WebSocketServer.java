@@ -65,6 +65,7 @@ public class WebSocketServer {
 			String user = (String) operateJSON.get("user");
 			String type = (String) operateJSON.get("type");
 			int lastUpdateId = operateJSON.getInt("lastUpdateId");
+			long receiveTime = (long) operateJSON.get("receiveTime");
 			String start = "";
 			if (type.equals("addPOI") || type.equals("deletePOI")
 					|| type.equals("addLine") || type.equals("deleteLine")
@@ -76,9 +77,6 @@ public class WebSocketServer {
 				end = operateJSON.get("end").toString();
 			String title = (String) operateJSON.get("title");
 			String content = (String) operateJSON.get("content");
-
-			Date nowDate = new Date();
-			Timestamp receiveTime = new Timestamp(nowDate.getTime());
 
 			System.out.println(timestamp + " " + date + " " + city + " "
 					+ group + " " + user + " " + type + " " + start + " " + end

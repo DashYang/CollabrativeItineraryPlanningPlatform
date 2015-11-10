@@ -106,6 +106,14 @@ function updatePOINodeList() {
 	});
 }
 
+function deletePOIButtonOfAgent(POId) {
+	//
+	attachStartTime("deletePOI:" + POId);
+	//
+	
+	deletePOIMessage("", "", POId);
+}
+
 function clearMarkers() {
 	for ( var i in POINodes) {
 		POINodes[i].setMap(null);

@@ -135,6 +135,17 @@ function updatePOINodeList() {
 	});
 }
 
+function deletePOIButtonOfAgent(POId) {
+	var realIndex = getRealIndex(POINodes, POId);
+	
+	//
+	attachStartTime("deletePOI:" + POINodes[realIndex].item.getTitle());
+	//
+	
+	deletePOIMessage(POINodes[realIndex].item.getPosition(),
+			POINodes[realIndex].item.getTitle(), POId);
+}
+
 function getRealIndex(doc, index) {
 	var targetIndex = 1;
 	for (; targetIndex < doc.length - 1; targetIndex += 1) {

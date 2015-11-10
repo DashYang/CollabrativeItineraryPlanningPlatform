@@ -133,6 +133,8 @@ function controlalgorithm(message) {
 	//
 	if(message.user == username)
 		attachEndTime();
+	else
+		attachRemoteTime(message.receiveTime , message.type);
 	//
 }
 

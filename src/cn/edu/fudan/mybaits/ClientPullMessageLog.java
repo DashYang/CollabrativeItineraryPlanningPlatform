@@ -24,7 +24,7 @@ public class ClientPullMessageLog implements EntityOperation{
 	private String title;
 	private String content;
 	private int lastUpdateId;
-	private Timestamp receiveTime;
+	private long receiveTime;
 	
 	public ClientPullMessageLog() {
 		super();
@@ -40,12 +40,12 @@ public class ClientPullMessageLog implements EntityOperation{
 		this.title = "";
 		this.content = "";
 		this.lastUpdateId = 0;
-		this.receiveTime = null;
+		this.receiveTime = 0;
 	}
 	
 	public ClientPullMessageLog(int timestamp ,String date, String city, String group,
 			String user, String type, String start, String end, String title,
-			String content , int lastUpdateId , Timestamp time) {
+			String content , int lastUpdateId , long time) {
 		super();
 		this.id = 0;
 		this.timestamp = timestamp;
@@ -70,11 +70,11 @@ public class ClientPullMessageLog implements EntityOperation{
 		this.lastUpdateId = lastUpdateId;
 	}
 
-	public Timestamp getReceiveTime() {
+	public long getReceiveTime() {
 		return receiveTime;
 	}
 
-	public void setReceiveTime(Timestamp receiveTime) {
+	public void setReceiveTime(long receiveTime) {
 		this.receiveTime = receiveTime;
 	}
 

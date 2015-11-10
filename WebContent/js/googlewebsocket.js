@@ -37,6 +37,7 @@ function createMessageLog(var1, var2, var3, type) {
 	jsonMessage["group"] = group;
 	jsonMessage["user"] = username;
 	jsonMessage["type"] = type;
+	jsonMessage["receiveTime"] = new Date().getTime();
 	if (type == "addPOI") {
 		latLng = var1;
 		title = var2;
