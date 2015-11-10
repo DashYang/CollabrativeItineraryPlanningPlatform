@@ -246,7 +246,7 @@ function addLine(index) {
 	if (arrow == null)
 		arrow = new Array();
 	var button = "#c" + index;
-	$(button).remove();
+//	$(button).remove();
 	arrow.push(index);
 	if (arrow.length >= 2) {
 		var content = $("#POIContent").val();

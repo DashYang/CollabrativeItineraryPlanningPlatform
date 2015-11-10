@@ -337,7 +337,7 @@ function addLine(index) {
 	var selectedPOI = POINodes[realIndex].item;
 	$("#piclPOI").html("pick:" + selectedPOI.getTitle());
 	var button = "#c" + index;
-	$(button).remove();
+//	$(button).remove();
 	arrow.push(index);
 	if (arrow.length >= 2) {
 		var content = $("#POIContent").val();
