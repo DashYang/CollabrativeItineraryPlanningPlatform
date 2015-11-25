@@ -54,22 +54,22 @@ html,body,#map-canvas {
 			<div class='col-md-4'>
 				<div id='dashboard' class="board">
 					<h3>
-						<span class="label label-default">在线用户</span>
+						<span class="label label-default">online user</span>
 					</h3>
 					<div id='userList'></div>
 					<h3>
-						<span class="label label-default">聊天框</span>
+						<span class="label label-default">chat box</span>
 					</h3>
 					<div id='messagelist'></div>
 					<textarea id='messagebox' class="form-control" rows="3"></textarea>
-					<button id='sendMessage' class="btn btn-default" type="button">发送</button>
+					<button id='sendMessage' class="btn btn-default" type="button">send</button>
 					<h3>
-						<span class="label label-default">添加的兴趣点(右键对应项可删除)</span>
+						<span class="label label-default">POIs</span>
 					</h3>
 					<ul id='POIList' class="list-group">
 					</ul>
 					<h3>
-						<span class="label label-default">添加的连线(右键对应项可删除)</span>
+						<span class="label label-default">Edges(right click to delete)</span>
 					</h3>
 					<ul id='lineList' class="list-group">
 					</ul>

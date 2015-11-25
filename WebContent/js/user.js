@@ -5,7 +5,7 @@ function addUser(username) {
 	var content = "";
 	var flag = false;
 	for ( var i = 0; i < userList.length; i++) {
-		content += userList[i].name + " " + userList[i].connectTime + "<br>";
+		content += userList[i].name + /**" " + userList[i].connectTime + **/"<br>";
 		if (userList[i].name == username) {
 			flag = true;
 		}
@@ -16,7 +16,7 @@ function addUser(username) {
 		var date = new Date();
 		user['connectTime'] = date.toLocaleString(); // 获取当前日期
 		userList.push(user);
-		$("#userList").html(content + user.name + " " + user.connectTime);
+		$("#userList").html(content + user.name /**+ " " + user.connectTime**/);
 	}else
 		$("#userList").html(content);
 }

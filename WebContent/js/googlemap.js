@@ -94,11 +94,11 @@ function updatePOINodeList() {
 			var deleteButton = "<button id='p"
 					+ id
 					+ "' type='button' class='deltePOIbuttoon btn btn-default btn-xs'>"
-					+ "x" + "</button>";
+					+ "delete" + "</button>";
 			var connectButton = "<button id='c"
 					+ id
 					+ "' type='button' class='connectPOIbuttoon btn btn-default btn-xs'>"
-					+ "->" + "</button>";
+					+ "connect" + "</button>";
 			var updateButtopm = "<button id='u" +
 						id +
 					"' type='button' class='updatePOIbuttoon btn btn-default btn-xs'>update</button>"
@@ -260,8 +260,8 @@ function updateLinelist() {
 					+ "' class='list-group-item list-group-item-success'>"
 					+ lineNodes[index].item.start.getTitle() + " to "
 					+ lineNodes[index].item.end.getTitle() + " "
-					+ lineNodes[index].item.content + "(" + voteNumber[index]
-					+ ")" + "</li>";
+					+ lineNodes[index].item.content /**+ "(" + voteNumber[index]
+					+ ")" +**/ "</li>";
 			id += 1;
 		}
 	}

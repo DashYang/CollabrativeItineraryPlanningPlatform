@@ -12,6 +12,8 @@ function attachStartTime(tag) {
 function attachEndTime() {
 	var endTime = new Date().getTime();
 	var timeObject = timeArray[front];
+	if(timeObject == null || timeObject.startTime == null)
+		return;
 	timeObject.endTime = endTime;
 	front += 1;
 	console.log(timeObject.tag + ":" + (timeObject.endTime - timeObject.startTime));
@@ -23,7 +25,7 @@ function getResult() {
 	for(var index in timeArray) {
 		var timeObject = timeArray[index];
 		str += (timeObject.endTime - timeObject.startTime) + ",";
-	}
+	} 
 	str = str.substring(0 , str.length-1);
 	return str;
 }

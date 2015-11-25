@@ -139,13 +139,26 @@ function controlalgorithm(message) {
 }
 
 // Torder(newMessage) < Torder(excuteMessage)
+//function torder(newMessage, excuteMessage) {
+//	var excuteSequnce = excuteMessage.timestamp;
+//	if (excuteMessage.user == username && ( ackHashMap[excuteSequnce] == null
+//			|| newMessage.id < ackHashMap[excuteSequnce]) ) {
+//		return true;
+//	}
+//	if(excuteMessage.user != username && newMessage.id < excuteMessage.id)
+//		return true;
+//	return false;
+//}
 function torder(newMessage, excuteMessage) {
-	var excuteSequnce = excuteMessage.timestamp;
-	if (excuteMessage.user == username && ( ackHashMap[excuteSequnce] == null
-			|| newMessage.id < ackHashMap[excuteSequnce]) ) {
+	var newMessageSequence = newMessage.timestamp;
+	var excuteMessageSequence = excuteMessage.timestamp;
+	if (excuteMessage.user == newMessage.user && (newMessageSequence < excuteMessageSequence))   
 		return true;
-	}
-	if(excuteMessage.user != username && newMessage.id < excuteMessage.id)
+	if(newMessage.user == username && ackHashMap[newMessageSequence] != null && ackHashMap[newMessageSequence] < excuteMessage.id)
+		return true;
+	if(excuteMessage.user == username && ackHashMap[excuteMessageSequence] == null || newMessage.id < ackHashMap[excuteMessageSequence])
+		return true;
+	if(newMessage.id < excuteMessage.id)
 		return true;
 	return false;
 }
@@ -154,11 +167,12 @@ function rangeScan(doc, nodeIndex, newnode) {
 	var targetIndex = -1;
 	for ( var i = nodeIndex + 1; i < doc.length; i++) {
 		var addNode = doc[i].getStateVector()[0];
-		if (!isHappenedBefore(addNode , newnode)) {
+		if (!isHappenedBefore(addNode , newnode) && !isHappenedBefore(newnode , addNode)) {
 			if (torder(newnode, addNode) == true && targetIndex == -1) {
 				targetIndex = i;
 			}
-			if (torder(newnode, addNode) == false) {
+			if (torder(newnode, addNode) == false && 
+					(targetIndex != -1 && isHappenedBefore(addNode , doc[targetIndex].getStateVector()[0]))) {  
 				targetIndex = -1;
 			}
 		}

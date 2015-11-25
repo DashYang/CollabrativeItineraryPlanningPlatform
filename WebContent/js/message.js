@@ -83,9 +83,11 @@ $("#sendMessage").click(function() {
 	var content = $("#messagebox").val();
 	jsonMessage["timestamp"] = timestamp;
 	timestamp += 1;
-	jsonMessage["date"] = "2015/7/28";
-	jsonMessage["city"] = "Shanghai";
-	jsonMessage["group"] = "cisl";
+	jsonMessage["date"] = date;
+	jsonMessage["city"] = city;
+	jsonMessage["group"] = group;
+	jsonMessage['lastUpdateId'] = lastUpdateId;
+	jsonMessage["receiveTime"] = new Date().getTime();
 	jsonMessage["user"] = username;
 	jsonMessage["type"] = "message";
 	jsonMessage['content'] = content;
@@ -99,6 +101,6 @@ function updateMessageList(user, content) {
 	var pastContent = $("#messagelist").html();
 	var date = new Date();
 	$("#messagelist").html(
-			pastContent + user + " 于 " + date.toLocaleString() + " 说:<br>"
+			pastContent + user + /**" 于 " + date.toLocaleString() + **/" says:<br>"
 					+ content + "<br>");
 }
