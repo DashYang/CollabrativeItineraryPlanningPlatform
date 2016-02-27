@@ -54,11 +54,11 @@ html,body,#map-canvas {
 			<div class='col-md-4'>
 				<div id='dashboard' class="board">
 					<h3>
-						<span class="label label-default">online user</span>
+						<span class="label label-default">Online users</span>
 					</h3>
 					<div id='userList'></div>
 					<h3>
-						<span class="label label-default">chat box</span>
+						<span class="label label-default">Dialogues</span>
 					</h3>
 					<div id='messagelist'></div>
 					<textarea id='messagebox' class="form-control" rows="3"></textarea>
