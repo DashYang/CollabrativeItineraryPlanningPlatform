@@ -24,7 +24,7 @@ public class MessageLog implements EntityOperation{
 	private String title;
 	private String content;
 	private int lastUpdateId;
-	private long receiveTime;
+	private Timestamp receiveTime;
 	
 	public MessageLog() {
 		super();
@@ -40,7 +40,7 @@ public class MessageLog implements EntityOperation{
 		this.title = "";
 		this.content = "";
 		this.lastUpdateId = 0;
-		this.receiveTime = 0;
+		this.receiveTime = new Timestamp(0);
 	}
 	
 	public MessageLog(int timestamp ,String date, String city, String group,
@@ -59,7 +59,7 @@ public class MessageLog implements EntityOperation{
 		this.title = title;
 		this.content = content;
 		this.lastUpdateId = lastUpdateId;
-		this.receiveTime = time;
+		this.receiveTime = new Timestamp(time);
 	}
 
 	public int getLastUpdateId() {
@@ -70,12 +70,12 @@ public class MessageLog implements EntityOperation{
 		this.lastUpdateId = lastUpdateId;
 	}
 
-	public long getReceiveTime() {
+	public Timestamp getReceiveTime() {
 		return receiveTime;
 	}
 
 	public void setReceiveTime(long receiveTime) {
-		this.receiveTime = receiveTime;
+		this.receiveTime = new Timestamp(receiveTime);;
 	}
 
 	public int getId() {
