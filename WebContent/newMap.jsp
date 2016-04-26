@@ -98,8 +98,6 @@ html,body,#map-canvas {
 <script type="text/javascript" src="./js/schedule/node.js"></script>
 <script type="text/javascript" src="./js/util/queue.js"></script>
 <script type="text/javascript" src="./js/schedule/ast.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBE6NUJDzJYX4DYBiUcfyQcaWy2o0pWRl4"
-  type="text/javascript"></script>
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBE6NUJDzJYX4DYBiUcfyQcaWy2o0pWRl4&libraries=places"></script>
 <script type="text/javascript" src="./js/schedule/googlemap.js"></script>
 <script type="text/javascript" src="./js/schedule/googlewebsocket.js"></script>

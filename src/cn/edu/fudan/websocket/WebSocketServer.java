@@ -66,12 +66,10 @@ public class WebSocketServer {
 			String type = (String) operateJSON.get("type");
 			int lastUpdateId = operateJSON.getInt("lastUpdateId");
 			long receiveTime = (long) operateJSON.get("receiveTime");
-			String start = "";
-			if (type.equals("addPOI") || type.equals("deletePOI")
-					|| type.equals("addLine") || type.equals("deleteLine")
-					|| type.equals("voteLine") || type.equals("updatePOI"))
-				start = operateJSON.get("start").toString();
-			String end = "";
+			String identifer = (String) operateJSON.get("identifer");
+			String targetUser = (String) operateJSON.get("targetUser");
+			String start = operateJSON.get("start").toString();
+			String end = (String) operateJSON.get("end");
 			if (type.equals("addLine") || type.equals("deleteLine")
 					|| type.equals("voteLine") || type.equals("updatePOI"))
 				end = operateJSON.get("end").toString();
@@ -83,8 +81,7 @@ public class WebSocketServer {
 					+ " " + title + " " + content + " " + lastUpdateId + " "
 					+ receiveTime);
 			MessageLog messageLog = new MessageLog(timestamp, date, city,
-					group, user, type, start, end, title, content,
-					lastUpdateId, receiveTime);
+					lastUpdateId, receiveTime,identifer,targetUser);
 			EntityOperation operation = messageLog;
 			id = operation.save();
 		}

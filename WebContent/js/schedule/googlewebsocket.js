@@ -27,7 +27,7 @@ function checkUserIdentity() {
 }
 
 // 产生操作的相关信息
-function createMessageLog(var1, var2, var3, type) {
+function createMessageLog(var1, var2, var3, position, targetUser, type) {
 	var jsonMessage = new Object();
 	jsonMessage["timestamp"] = timestamp;
 	timestamp += 1;
@@ -37,6 +37,7 @@ function createMessageLog(var1, var2, var3, type) {
 	jsonMessage["group"] = group;
 	jsonMessage["user"] = username;
 	jsonMessage["type"] = type;
+	jsonMessage["targetUser"] = targetUser;
 	jsonMessage["receiveTime"] = new Date().getTime();
 	if (type == "addPOI") {
 		latLng = var1;
@@ -45,6 +46,9 @@ function createMessageLog(var1, var2, var3, type) {
 		jsonMessage['start'] = latLng;
 		jsonMessage['title'] = title;
 		jsonMessage["content"] = content;
+		jsonMessage['end'] = position;
+		jsonMessage['identifer'] = username+":"+timestamp;
+		jsonMessage['targetUser'] = targetUser;
 	} else if (type == "deletePOI") {
 		position = var1;
 		title = var2;
@@ -71,8 +75,10 @@ function createMessageLog(var1, var2, var3, type) {
 	return jsonMessage;
 }
 
-function addPOIMessage(latLng, title, content) {
-	jsonMessage = createMessageLog(latLng, title, content, "addPOI");
+function addPOIMessage(lastActivePOI,targetUsername,position) {
+	jsonMessage = createMessageLog(lastActivePOI.getPosition(), lastActivePOI.getTitle(), lastActivePOI.content,
+			position,targetUsername,"addPOI");
+	
 	// messageProcess(jsonMessage);
 	controlalgorithm(jsonMessage);
 	localMessageLog.push(jsonMessage);
@@ -93,39 +99,6 @@ function deletePOIMessage(latLng, title, content) {
 	}
 }
 
-function addLineMessage(startIndex, endIndex, content) {
-	jsonMessage = createMessageLog(startIndex, endIndex, content, "addLine");
-	// messageProcess(jsonMessage);
-	controlalgorithm(jsonMessage);
-	localMessageLog.push(jsonMessage);
-	if (isBroadMessage() == true) {
-		var message = JSON.stringify(localMessageLog.pop());
-		ws.send(message);
-	}
-}
-
-function deleteLineMessage(startIndex, endIndex, content) {
-	jsonMessage = createMessageLog(startIndex, endIndex, content, "deleteLine");
-	// messageProcess(jsonMessage);
-	controlalgorithm(jsonMessage);
-	localMessageLog.push(jsonMessage);
-	if (isBroadMessage() == true) {
-		var message = JSON.stringify(localMessageLog.pop());
-		ws.send(message);
-	}
-}
-
-//function updateNodeMessage(startIndex, endIndex, content) {
-//	jsonMessage = createMessageLog(startIndex, endIndex, content, "updatePOI");
-//	// messageProcess(jsonMessage);
-//	controlalgorithm(jsonMessage);
-//	localMessageLog.push(jsonMessage);
-//	if (isBroadMessage() == true) {
-//		var message = JSON.stringify(localMessageLog.pop());
-//		ws.send(message);
-//	}
-//}
-
 function updatePOIMessage(index , type , content) {
 	jsonMessage = createMessageLog(index, type, content, "updatePOI");
 	// messageProcess(jsonMessage);
@@ -136,18 +109,6 @@ function updatePOIMessage(index , type , content) {
 		ws.send(message);
 	}
 }
-// 投票
-function voteLineMessage(startLatLng, endLatLng) {
-	jsonMessage = createMessageLog(startLatLng, endLatLng, "vote", "voteLine");
-	// messageProcess(jsonMessage);
-	controlalgorithm(jsonMessage);
-	localMessageLog.push(jsonMessage);
-	if (isBroadMessage() == true) {
-		var message = JSON.stringify(localMessageLog.pop());
-		ws.send(message);
-	}
-}
-
 checkUserIdentity();
 
 var currentPath = window.document.location.href;
@@ -210,7 +171,7 @@ function messageProcess(message) {
 		return;
 	switch (message.type) {
 	case "addPOI":
-		addPOIBasic(message);
+		add(message);
 		break;
 	case "deletePOI":
 		deletePOIBasic(message);

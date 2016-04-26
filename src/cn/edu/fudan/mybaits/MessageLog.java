@@ -25,6 +25,8 @@ public class MessageLog implements EntityOperation{
 	private String content;
 	private int lastUpdateId;
 	private Timestamp receiveTime;
+	private String identifier;
+	private String targetUser;
 	
 	public MessageLog() {
 		super();
@@ -41,11 +43,13 @@ public class MessageLog implements EntityOperation{
 		this.content = "";
 		this.lastUpdateId = 0;
 		this.receiveTime = new Timestamp(0);
+		this.identifier = "";
+		this.targetUser = "";
 	}
 	
 	public MessageLog(int timestamp ,String date, String city, String group,
 			String user, String type, String start, String end, String title,
-			String content , int lastUpdateId , long time) {
+			String content , int lastUpdateId , long time, String identifier, String targetUser) {
 		super();
 		this.id = 0;
 		this.timestamp = timestamp;
@@ -60,6 +64,25 @@ public class MessageLog implements EntityOperation{
 		this.content = content;
 		this.lastUpdateId = lastUpdateId;
 		this.receiveTime = new Timestamp(time);
+		this.identifier = identifier;
+		this.targetUser = targetUser;
+	}
+	
+	
+	public String getTargetUser() {
+		return targetUser;
+	}
+
+	public void setTargetUser(String targetUser) {
+		this.targetUser = targetUser;
+	}
+
+	public String getIdentifier() {
+		return identifier;
+	}
+
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
 	}
 
 	public int getLastUpdateId() {

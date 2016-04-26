@@ -115,7 +115,7 @@ function displayNodes(username, type) {
 
 function controlalgorithm(message) {
 	
-	var targetUsername = message.user;
+	var targetUsername = message.targetUser;
 	retracing(targetUsername,message);
 //	displayNodes(POINodes, "POI");
 	
@@ -125,6 +125,11 @@ function controlalgorithm(message) {
 	retracing(targetUsername, true);
 //	displayNodes(POINodes, "POI");
 	//
+	
+	if(targetUsername == $("#who").text())
+		updatePOINodeList(targetUsername);
+	else if(targetUsername == username && $("#who").text() == "My")
+		updatePOINodeList(targetUsername);
 	if(message.user == username)
 		attachEndTime();
 	else
@@ -157,9 +162,9 @@ function torder(newMessage, excuteMessage) {
 	return false;
 }
 
-function rangeScan(doc, nodeIndex, newnode) {
+function rangeScan(doc, start, end, newnode) {
 	var targetIndex = -1;
-	for ( var i = nodeIndex + 1; i < doc.length; i++) {
+	for ( var i = start+1 ; i <= end ; i++) {
 		var addNode = doc[i].getStateVector()[0];
 		if (!isHappenedBefore(addNode , newnode) && !isHappenedBefore(newnode , addNode)) {
 			if (torder(newnode, addNode) == true && targetIndex == -1) {
@@ -180,5 +185,40 @@ function rangeScan(doc, nodeIndex, newnode) {
 	if (targetIndex != -1) {
 		return targetIndex;
 	} else
-		return doc.length - 1;
+		return end;
 }
+
+//parameter should be message
+function add(message) {
+	var targetUsername = message.targetUser;
+	var position = message.end;
+	var POINodes = allSchedule[targetUsername];
+	var start = 0,end = 0;
+	var validcnt = 0;
+	for (var index = 0; index < POINodes.length && end <= position; index += 1) {
+		if (POINodes[index].getValid() == true) {
+			validcnt += 1;
+		}
+		if(validcnt - 1 == position)
+			start = index;
+		if(validcnt - 2== position) {
+			end = index;
+			break;
+		}
+	}
+	var targetIndex = rangeScan(POINodes, start, end, message);
+	
+	var latLng = new google.maps.LatLng(message.start.G, message.start.K);
+	var POIMarker = new google.maps.Marker({
+		position : latLng,
+		title : message.title,
+		content : message.content,
+	});
+	placeMarker(POIMarker, map);
+
+	node = new Node(POIMarker);
+	node.appendStateVector(message);
+	
+	POINodes.splice(targetIndex, 0, node);
+	
+};

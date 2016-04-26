@@ -14,8 +14,8 @@ import org.apache.ibatis.annotations.SelectKey;
  */
 public interface MessageLogDAO {
 
-	@Insert("insert into messagelog (`timestamp`,`date`,`city`,`group`,`user`,`type`,`start`,`end`,`title`,`content`,`lastUpdateId`,`receiveTime`)"
-			+ " values (#{timestamp},#{date},#{city},#{group},#{user},#{type},#{start},#{end},#{title},#{content},#{lastUpdateId},#{receiveTime})")
+	@Insert("insert into messagelog (`timestamp`,`date`,`city`,`group`,`user`,`type`,`start`,`end`,`title`,`content`,`lastUpdateId`,`receiveTime`, `identifier`, `targetUser`)"
+			+ " values (#{timestamp},#{date},#{city},#{group},#{user},#{type},#{start},#{end},#{title},#{content},#{lastUpdateId},#{receiveTime},#{identifier},#{targetUser})")
 	@SelectKey(before = false, keyProperty = "id",statement = { "SELECT last_insert_id() as id" }, resultType = java.lang.Integer.class)
 	public int insert(MessageLog messageLog);
 	

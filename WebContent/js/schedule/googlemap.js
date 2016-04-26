@@ -57,17 +57,17 @@ function deletePOIBasic(message) {
 	// updateLinelist();
 }
 
-//function updatePOIBasic(message) {
-//	var index = message.start;
-//	var targetIndex = getRealIndex(POINodes, index);
-//	POINodes[targetIndex].appendStateVector(message);
-//}
+// function updatePOIBasic(message) {
+// var index = message.start;
+// var targetIndex = getRealIndex(POINodes, index);
+// POINodes[targetIndex].appendStateVector(message);
+// }
 
 function updatePOIBasic(message) {
 	var index = message.start;
 	var type = message.end;
 	var doc = POINodes;
-	if(type == "line") 
+	if (type == "line")
 		doc = lineNodes;
 	var targetIndex = getRealIndex(doc, index);
 	doc[targetIndex].appendStateVector(message);
@@ -79,60 +79,55 @@ function updatePOINodeList(targetUsername) {
 	var POINodes = allSchedule[targetUsername];
 	var targetBoard = $("#schedule");
 	var userboard = $("#who");
-	var addButton = "<button id='i"
-		+ id
-		+ "' type='button' class='connectPOIbuttoon btn btn-default btn-xs'>"
-		+ "add" + "</button>";
-	if(targetUsername == username)
+
+	if (targetUsername == username)
 		userboard.text("My");
 	else
 		userboard.text(targetUsername);
-	
-	if(POINodes == null) {
-		listHtml += "<li id='poi" + id
-		+ "'class='list-group-item list-group-item-info'>"
-		+ addButton
-		+ "</li>"
-		targetBoard.html(listHtml);
-		return;
-	}
-	
-	for (var index = 1; index < POINodes.length - 1 ; index += 1) {
-		if (POINodes[index].item.getVisible() == true) {
-			var updateButton = "<button id='u" +
-						id +
-					"' type='button' class='updatePOIbuttoon btn btn-default btn-xs'>update</button>";
-			var insertButton = "<button id='i"
-				+ id
-				+ "' type='button' class='connectPOIbuttoon btn btn-default btn-xs'>"
-				+ "insert before" + "</button>";
-			listHtml += "<li id='poi" + id
-					+ "'class='list-group-item list-group-item-info'>"
-					+ POINodes[index].item.getTitle() + " " + POINodes[index].item.content
-					+ insertButton + updateButton + "</li>";
-			id += 1;
+
+	if (POINodes != null) {
+		for ( var index = 1; index < POINodes.length - 1; index += 1) {
+			if (POINodes[index].item.getVisible() == true) {
+				var updateButton = "<button id='u"
+						+ id
+						+ "' type='button' class='updatePOIbuttoon btn btn-default btn-xs'>update</button>";
+				var insertButton = "<button id='i"
+						+ id
+						+ "' type='button' class='insertPOIbuttoon btn btn-default btn-xs'>"
+						+ "insert before" + "</button>";
+				listHtml += "<li id='poi" + id
+						+ "'class='list-group-item list-group-item-info'>"
+						+ POINodes[index].item.getTitle() + " "
+						+ POINodes[index].item.content + insertButton
+						+ updateButton + "</li>";
+				id += 1;
+			}
 		}
 	}
-	
-	addButton = "<button id='i"
-		+ id
-		+ "' type='button' class='connectPOIbuttoon btn btn-default btn-xs'>"
-		+ "add" + "</button>";
-	
+
+	var addButton = "<button id='i"
+			+ id
+			+ "' type='button' class='insertPOIbuttoon btn btn-default btn-xs'>"
+			+ "add" + "</button>";
+
 	listHtml += "<li id='poi" + id
-	+ "'class='list-group-item list-group-item-info'>"
-	+ addButton
-	+ "</li>";
-	
+			+ "'class='list-group-item list-group-item-info'>" + addButton
+			+ "</li>"
+
 	targetBoard.html(listHtml);
-	
-	$(".updatePOIbuttoon").click(function(e) {
-		var POId = $(this).attr("id").substr(1);
-		updateNode(POId);
+
+	$(".insertPOIbuttoon").click(function(e) {
+		var position = $(this).attr("id").substr(1);
+		if(lastActivePOI != null) {
+			addPOIMessage(lastActivePOI,targetUsername,position);
+			lastActivePOI.setMap(null);
+		}
+		else
+			alert("pick up a POI!");
 	});
 }
 
-function addLineBasic(selectedStartPOI,selectedEndPOI) {
+function addLineBasic(selectedStartPOI, selectedEndPOI) {
 	var lineSymbol = {
 		path : google.maps.SymbolPath.FORWARD_CLOSED_ARROW
 	};
@@ -149,14 +144,14 @@ function addLineBasic(selectedStartPOI,selectedEndPOI) {
 }
 
 function createItineraryMap() {
-	for(name in allSchedule) {
+	for (name in allSchedule) {
 		var POINodes = allSchedule[name];
 		var lastPOI = null;
-		for(var index=1; index < POINodes.length - 1; index +=1) {
+		for ( var index = 1; index < POINodes.length - 1; index += 1) {
 			var POI = POINodes[index].item;
 			placeMarker(POI, map);
-			if(lastPOI != null) {
-				addLineBasic(lastPOI,POI);
+			if (lastPOI != null) {
+				addLineBasic(lastPOI, POI);
 			}
 			lastPOI = POI;
 		}
@@ -165,11 +160,11 @@ function createItineraryMap() {
 
 function deletePOIButtonOfAgent(POId) {
 	var realIndex = getRealIndex(POINodes, POId);
-	
+
 	//
 	attachStartTime("deletePOI:" + POINodes[realIndex].item.getTitle());
 	//
-	
+
 	deletePOIMessage(POINodes[realIndex].item.getPosition(),
 			POINodes[realIndex].item.getTitle(), POId);
 }
@@ -185,34 +180,28 @@ function getRealIndex(doc, index) {
 	return targetIndex;
 }
 
+var lastActivePOI = null;
+function clictPOIEvent() {
+	var nextPOI = $(this)[0];
+	if (lastActivePOI != null && nextPOI != lastActivePOI)
+		lastActivePOI.setAnimation(null);
+	lastActivePOI = nextPOI;
+	lastActivePOI.setAnimation(google.maps.Animation.BOUNCE);
 
-function addPOIBasic(message) {
-	var POINodes = allSchedule[message.user];
-	var latLng = new google.maps.LatLng(message.start.G, message.start.K);
+}
+
+function addPOIBasic(latLng, title, content) {
 	var POIMarker = new google.maps.Marker({
 		position : latLng,
-		title : message.title,
-		content : message.content,
+		title : title,
+		content : content,
+		animation : google.maps.Animation.DROP,
 	});
-	node = new Node(POIMarker);
-	node.appendStateVector(message);
+	placeMarker(POIMarker, map);
+	POIMarker.addListener('click', clictPOIEvent);
 
-	var index = 0;
-	for (index = POINodes.length - 2; index > 0; index -= 1) {
-		if (POINodes[index].getValid() == true) {
-			break;
-		}
-	}
-	var targetIndex = rangeScan(POINodes, index, message);
-	POINodes.splice(targetIndex, 0, node);
-
-	node.item.uuid = POINodes.length; // uuid
-
-	// node.setValid(true);
-	// POINodes.push(node);
+	POIs.push(POIMarker);
 	map.panTo(latLng);
-
-	// updatePOINodeList();
 
 }
 
@@ -223,16 +212,11 @@ function callback(results, status) {
 	) {
 		if (results.length > 0) {
 			var place = results[0];
-			var latLng = new Object();
-			latLng['G'] = place.geometry.location.lat();
-			latLng['K'] = place.geometry.location.lng();
-
 			//
 			attachStartTime("addPOI:" + place.name);
 			//
-			
-			addPOIMessage(latLng, place.name, content);
-			
+
+			addPOIBasic(place.geometry.location, place.name, content);
 		}
 	} else {
 		alert("输入备注");
@@ -263,8 +247,7 @@ function getSelectedPOI(latLng) {
 	return null;
 }
 
-
-//updateNode(原子操作)
+// updateNode(原子操作)
 function updateNodeBasic(message) {
 	var index = message.content;
 	var targetIndex = getRealIndex(POINodes, index);
@@ -278,10 +261,10 @@ function updateNode(index) {
 	$("#piclPOI").html("update:" + selectedPOI.getTitle() + " " + content);
 
 	//
-	attachStartTime("updatePOI:" + selectedPOI.getTitle() + " " + content); 
+	attachStartTime("updatePOI:" + selectedPOI.getTitle() + " " + content);
 	//
-	
-	updatePOIMessage(index, "node" , content);
+
+	updatePOIMessage(index, "node", content);
 }
 
 $("#addLine").click(function() {
@@ -330,4 +313,3 @@ function placeMarker(marker, map) {
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
-
