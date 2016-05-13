@@ -39,30 +39,6 @@ function checkMapIdentity() {
 	}
 }
 
-function findPOIByPoistion(latLng) {
-	for (index in POIs) {
-		if (POIs[index].getPosition().toUrlValue() == latLng.toUrlValue())
-			return index;
-	}
-	return -1;
-}
-
-// 删除marker（原子操作）
-function deletePOIBasic(message) {
-	var index = message.content;
-	var targetIndex = getRealIndex(POINodes, index);
-	POINodes[targetIndex].appendStateVector(message);
-	// deletePOIExtraEffect(index);
-	// updatePOINodeList();
-	// updateLinelist();
-}
-
-// function updatePOIBasic(message) {
-// var index = message.start;
-// var targetIndex = getRealIndex(POINodes, index);
-// POINodes[targetIndex].appendStateVector(message);
-// }
-
 function updatePOIBasic(message) {
 	var index = message.start;
 	var type = message.end;
@@ -75,64 +51,80 @@ function updatePOIBasic(message) {
 
 function updatePOINodeList(targetUsername) {
 	var listHtml = "";
-	var id = 0;
-	var POINodes = allSchedule[targetUsername];
+	var actList = new Array();
+	var start = itineraryGraph['0'];
+	if(start.userInfoList[targetUsername] == null) {
+		itineraryGraph["0"].userInfoList[targetUsername]= new UserInfo(targetUsername,'1',"",orginalSV,orginalSV);
+		itineraryGraph['1'].userInfoList[targetUsername]=  new UserInfo(targetUsername,'',"",orginalSV,orginalSV);
+	}
+	actList.push(start);
+	var cur = start.userInfoList[targetUsername].nextId;
+	while(cur != null && cur != "1") {
+		actList.push(itineraryGraph[cur]);
+		cur = itineraryGraph[cur].userInfoList[targetUsername].nextId;
+	}
 	var targetBoard = $("#schedule");
 	var userboard = $("#who");
-
 	if (targetUsername == username)
 		userboard.text("My");
 	else
 		userboard.text(targetUsername);
-
-	if (POINodes != null) {
-		for ( var index = 1; index < POINodes.length - 1; index += 1) {
-			if (POINodes[index].item.getVisible() == true) {
-				var updateButton = "<button id='u"
-						+ id
-						+ "' type='button' class='updatePOIbuttoon btn btn-default btn-xs'>u</button>";
-				var insertButton = "<button id='i"
-						+ id
-						+ "' type='button' class='insertPOIbuttoon btn btn-default btn-xs'>"
-						+ "ib" + "</button>";
-				var deleteButton = "<button id='d"
-					+ id
-					+ "' type='button' class='deletePOIbuttoon btn btn-default btn-xs'>"
-					+ "d" + "</button>";
-				listHtml += "<li id='poi" + id
-						+ "'class='list-group-item list-group-item-info'>"
-						+ POINodes[index].item.getTitle() + " "
-						+ POINodes[index].item.content + insertButton
-						+ updateButton + deleteButton+ "</li>";
-				id += 1;
-			}
+	
+	for ( var index = 1; index < actList.length ; index += 1) {
+		var PreId = actList[index-1].identifier;
+		var tarId = actList[index].identifier;
+		if (actList[index].userInfoList[targetUsername].death == INFINITE) {
+			var insertButton = "<button id='i"
+					+ PreId
+					+ "' type='button' class='insertPOIbuttoon btn btn-default btn-xs'>"
+					+ "ib" + "</button>";
+			var deleteButton = "<button id='d"
+				+ tarId
+				+ "' type='button' class='deletePOIbuttoon btn btn-default btn-xs'>"
+				+ "d" + "</button>";
+			listHtml += "<li id='poi" + tarId
+					+ "'class='list-group-item list-group-item-info'>"
+					+ actList[index].title + " "
+					+ actList[index].content + insertButton
+					+ deleteButton+ "</li>";
 		}
 	}
-
+	
+	var PreId = actList[actList.length - 1].identifier;
 	var addButton = "<button id='i"
-			+ id
-			+ "' type='button' class='insertPOIbuttoon btn btn-default btn-xs'>"
-			+ "add" + "</button>";
-
-	listHtml += "<li id='poi" + id
-			+ "'class='list-group-item list-group-item-info'>" + addButton
-			+ "</li>"
+		+ PreId
+		+ "' type='button' class='insertPOIbuttoon btn btn-default btn-xs'>"
+		+ "add" + "</button>";
+	listHtml += "<li id='poi" + PreId
+		+ "'class='list-group-item list-group-item-info'>" + addButton
+		+ "</li>";
 
 	targetBoard.html(listHtml);
 
 	$(".insertPOIbuttoon").click(function(e) {
-		var position = $(this).attr("id").substr(1);
+		var preId = $(this).attr("id").substr(1);
 		if(lastActivePOI != null) {
-			addPOIMessage(lastActivePOI,targetUsername,position);
+			var newMessage = new message(null);
+			newMessage.make(preId, lastActivePOI.title, lastActivePOI.content, lastActivePOI.getPosition(), "add", targetUsername);
+			add(newMessage);
+			sendMessage(newMessage);
 			lastActivePOI.setMap(null);
+			updatePOINodeList(targetUsername);
+			createItineraryMap();
 		}
 		else
 			alert("pick up a POI!");
 	});
 	
 	$(".deletePOIbuttoon").click(function(e) {
-		var position = $(this).attr("id").substr(1);
-		deletePOIMessage(targetUsername,position);
+		var targetId = $(this).attr("id").substr(1);
+		var newMessage = new message(null);
+		var target = itineraryGraph[targetId];
+		newMessage.make(targetId, target.title, target.content, target.latlon, "delete", targetUsername);
+		deleteNode(newMessage);
+		sendMessage(newMessage);
+		updatePOINodeList(targetUsername);
+		createItineraryMap();
 	});
 }
 
@@ -153,41 +145,23 @@ function addLineBasic(selectedStartPOI, selectedEndPOI) {
 }
 
 function createItineraryMap() {
-	for (name in allSchedule) {
-		var POINodes = allSchedule[name];
+	
+	var start = itineraryGraph['0'];
+	for (name in start.userInfoList) {
+		var curId = start.userInfoList[name].nextId;
 		var lastPOI = null;
-		for ( var index = 1; index < POINodes.length - 1; index += 1) {
-			var POI = POINodes[index].item;
+		while(curId != null && curId != "1") {
+			var POI = itineraryGraph[curId].getMarker();
 			placeMarker(POI, map);
 			if (lastPOI != null) {
 				addLineBasic(lastPOI, POI);
 			}
 			lastPOI = POI;
+			curId = itineraryGraph[curId].userInfoList[name].nextId;
 		}
 	}
 }
 
-function deletePOIButtonOfAgent(POId) {
-	var realIndex = getRealIndex(POINodes, POId);
-
-	//
-	attachStartTime("deletePOI:" + POINodes[realIndex].item.getTitle());
-	//
-
-	deletePOIMessage(POINodes[realIndex].item.getPosition(),
-			POINodes[realIndex].item.getTitle(), POId);
-}
-
-function getRealIndex(doc, index) {
-	var targetIndex = 1;
-	for (; targetIndex < doc.length - 1; targetIndex += 1) {
-		if (index == 0 & doc[targetIndex].getValid() == true)
-			break;
-		if (doc[targetIndex].getValid() == true)
-			index -= 1;
-	}
-	return targetIndex;
-}
 
 var lastActivePOI = null;
 function clictPOIEvent() {
@@ -222,7 +196,7 @@ function callback(results, status) {
 		if (results.length > 0) {
 			var place = results[0];
 			//
-			attachStartTime("addPOI:" + place.name);
+		//	attachStartTime("addPOI:" + place.name);
 			//
 
 			addPOIBasic(place.geometry.location, place.name, content);
@@ -231,60 +205,6 @@ function callback(results, status) {
 		alert("输入备注");
 	}
 }
-
-// 对于POI添加监听事件，连线用
-function addListenerToPOIs() {
-	for (index in POINodes) {
-		google.maps.event
-				.addDomListener(POINodes[index].item, 'click', addLine);
-	}
-}
-
-// 清除监听
-function removeListenerToPOIs() {
-	for (index in POINodes) {
-		google.maps.event.clearListeners(POINodes[index].item, 'click');
-	}
-}
-
-// 根据经纬度找到POI
-function getSelectedPOI(latLng) {
-	for (index in POIs) {
-		if (POIs[index].getPosition().toUrlValue() == latLng.toUrlValue())
-			return POIs[index];
-	}
-	return null;
-}
-
-// updateNode(原子操作)
-function updateNodeBasic(message) {
-	var index = message.content;
-	var targetIndex = getRealIndex(POINodes, index);
-	POINodes[targetIndex].appendStateVector(message);
-}
-
-function updateNode(index) {
-	var realIndex = getRealIndex(POINodes, index);
-	var selectedPOI = POINodes[realIndex].item;
-	var content = $("#POIContent").val();
-	$("#piclPOI").html("update:" + selectedPOI.getTitle() + " " + content);
-
-	//
-	attachStartTime("updatePOI:" + selectedPOI.getTitle() + " " + content);
-	//
-
-	updatePOIMessage(index, "node", content);
-}
-
-$("#addLine").click(function() {
-	arrow = new Array();
-	var content = $("#POIContent").val();
-	if (content != "") {
-		addListenerToPOIs();
-	} else {
-		alert("输入备注");
-	}
-});
 
 $("#addPOI").click(function() {
 	var text = $("#POInfo").val();

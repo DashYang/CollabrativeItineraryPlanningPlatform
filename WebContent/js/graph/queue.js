@@ -4,6 +4,8 @@ function Queue() {
 		this.size = 0;
 		this.head = 0;
 		this.tail = 0;
+		this.maxSRN = -1;
+		this.ackIndex = 0;
 		this.list = new Array(); // 队列数据
 	};
 
@@ -12,6 +14,8 @@ function Queue() {
 		if (data == null)
 			return;
 		this.list.push(data);
+		if(data.SRN != null && data.SRN > this.maxSRN)
+			this.maxSRN = data.SRN;
 //		console.log(this.name + " push " + JSON.stringify(data));
 		this.head += 1;
 	};
@@ -40,10 +44,21 @@ function Queue() {
 	this.back = function() {
 		if(this.tail > 0)
 			return this.list[this.tail-1];
-		return null
+		return null;
 	}
 	
-	this.end()
+	this.ack = function(message) {
+		if(list[ackIndex].user != message.user || list[ackIndex].opcnt != message.opcnt) {
+			alert("wrong ack!");
+			return;
+		}
+		this.list[ackIndex].SRN = message.SRN;
+		this.ackIndex += 1;
+	}
+	
+	this.getSRN = function() {
+		return this.maxSRN;
+	}
 }
 
 

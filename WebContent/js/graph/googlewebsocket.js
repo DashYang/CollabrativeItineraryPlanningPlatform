@@ -10,8 +10,13 @@ function getUrlParam(name) {
 }
 
 var username = "";
-var timestamp = 0;
+var myTimestamp = 0;
 var lastUpdateId = -1;
+
+function getTimestamp() {
+	myTimestamp += 1;
+	return myTimestamp - 1;
+}
 
 $("#toIssue").click(function() {
 	if (username != "")
@@ -26,73 +31,17 @@ function checkUserIdentity() {
 	}
 }
 
-// 产生操作的相关信息
-function createMessageLog(var1, var2, var3, position, targetUser, type) {
-	var jsonMessage = new Object();
-	jsonMessage["timestamp"] = timestamp;
-	timestamp += 1;
-	jsonMessage['lastUpdateId'] = lastUpdateId;
-	jsonMessage["date"] = date;
-	jsonMessage["city"] = city;
-	jsonMessage["group"] = group;
-	jsonMessage["user"] = username;
-	jsonMessage["type"] = type;
-	jsonMessage["targetUser"] = targetUser;
-	jsonMessage["receiveTime"] = new Date().getTime();
-	if (type == "addPOI") {
-		latLng = var1;
-		title = var2;
-		content = var3;
-		jsonMessage['start'] = latLng;
-		jsonMessage['title'] = title;
-		jsonMessage["content"] = content;
-		jsonMessage['end'] = position;
-		jsonMessage['identifer'] = username+":"+timestamp;
-		jsonMessage['targetUser'] = targetUser;
-	} else if (type == "deletePOI") {
-		jsonMessage['start'] = "";
-		jsonMessage['title'] = "";
-		jsonMessage["content"] = "";
-		jsonMessage['end'] = position;
-		jsonMessage['identifer'] = username+":"+timestamp;
-		jsonMessage['targetUser'] = targetUser;
-	} else if (type == "updatePOI") {
-		index = var1;
-		type = var2;
-		content = var3;
-		jsonMessage["content"] = content;
-		jsonMessage['start'] = index;
-		jsonMessage['end'] = type;
-	}
-	else {
-		startIndex = var1;
-		endIndex = var2;
-		index = var3;
-		jsonMessage["content"] = index;
-		jsonMessage['start'] = startIndex;
-		jsonMessage['end'] = endIndex;
-	}
-	return jsonMessage;
-}
-
-function addPOIMessage(lastActivePOI,targetUsername,position) {
-	jsonMessage = createMessageLog(lastActivePOI.getPosition(), lastActivePOI.getTitle(), lastActivePOI.content,
-			position,targetUsername,"addPOI");
-	
-	// messageProcess(jsonMessage);
-	controlalgorithm(jsonMessage);
-	localMessageLog.push(jsonMessage);
+function sendMessage(message) {
+	localMessageLog.push(message);
 	if (isBroadMessage() == true) {
-		var message = JSON.stringify(localMessageLog.pop());
-		ws.send(message);
+		var sMessage = JSON.stringify(localToServerMessage(localMessageLog.pop()));
+		ws.send(sMessage);
 	}
 }
-
 function deletePOIMessage(targetUsername,position) {
 	jsonMessage = createMessageLog("", "", "",
 			position,targetUsername,"deletePOI");
 	// messageProcess(jsonMessage);
-	controlalgorithm(jsonMessage);
 	localMessageLog.push(jsonMessage);
 	if (isBroadMessage() == true) {
 		var message = JSON.stringify(localMessageLog.pop());
@@ -100,16 +49,6 @@ function deletePOIMessage(targetUsername,position) {
 	}
 }
 
-function updatePOIMessage(index , type , content) {
-	jsonMessage = createMessageLog(index, type, content, "updatePOI");
-	// messageProcess(jsonMessage);
-	controlalgorithm(jsonMessage);
-	localMessageLog.push(jsonMessage);
-	if (isBroadMessage() == true) {
-		var message = JSON.stringify(localMessageLog.pop());
-		ws.send(message);
-	}
-}
 checkUserIdentity();
 
 var currentPath = window.document.location.href;
@@ -144,8 +83,8 @@ $("#broadMessage").click(function() {
 	if (isBroadMessage() == true) {
 		while (localMessageLog.getSize() > 0) {
 			var message = localMessageLog.pop();
-			var jsonMessageString = JSON.stringify(message);
-			ws.send(jsonMessageString);
+			var sMessage = JSON.stringify(localToServerMessage(message));
+			ws.send(sMessage);
 		}
 	}
 });
@@ -210,7 +149,7 @@ ws.onmessage = function(evt) {
 	remoteMessageLog.push(jsonMessage);
 	// messageProcess(jsonMessage);
 	if (jsonMessage.type == "ack") {
-		ackHashMap[jsonMessage.timestamp] = jsonMessage.id;
+		remoteMessageLog[jsonMessage.timestamp] = jsonMessage.id;
 	} else if (jsonMessage.type != "connect" && jsonMessage.type != "close") {
 //		if (isReceiveMessage() == true) {
 //			while(remoteMessageLog.getSize() != 0);

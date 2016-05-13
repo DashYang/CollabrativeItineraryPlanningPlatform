@@ -78,7 +78,7 @@ function updateEventList(groupName) {
             			"<th>endDate</th><th>city</th><th>event</th>" +
             			"<th>user_status</th><th>event_status</th></tr>";
             	for(index in list) {
-            		var href =  "newMap.jsp?date=" + list[index].startDate+ "&city=" + list[index].city + "&group=" + groupName + "&username=" + username;
+            		var href =  "graph.jsp?date=" + list[index].startDate+ "&city=" + list[index].city + "&group=" + groupName + "&username=" + username;
             		str += "<tr><td>" + list[index].username + "</td><td>" + groupName  + "</td><td>" + list[index].startDate  + "</td>" +
             				"<td>" + list[index].endDate + "</td><td>" + list[index].city  + "</td><td><a href='" + href + "'>" + list[index].event  + "</a></td>" +
             						"<td>" + list[index].user_status + "</td><td>" + list[index].event_status  + "</td></tr>";
