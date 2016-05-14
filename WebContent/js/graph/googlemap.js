@@ -70,10 +70,11 @@ function updatePOINodeList(targetUsername) {
 	else
 		userboard.text(targetUsername);
 	
+	myINFINITE = getMyINFINITE(username);
 	for ( var index = 1; index < actList.length ; index += 1) {
 		var PreId = actList[index-1].identifier;
 		var tarId = actList[index].identifier;
-		if (actList[index].userInfoList[targetUsername].death == INFINITE) {
+		if (actList[index].userInfoList[targetUsername].death.opcnt == 0x3fffffff) {
 			var insertButton = "<button id='i"
 					+ PreId
 					+ "' type='button' class='insertPOIbuttoon btn btn-default btn-xs'>"
@@ -106,11 +107,9 @@ function updatePOINodeList(targetUsername) {
 		if(lastActivePOI != null) {
 			var newMessage = new message(null);
 			newMessage.make(preId, lastActivePOI.title, lastActivePOI.content, lastActivePOI.getPosition(), "add", targetUsername);
-			add(newMessage);
+			control(newMessage);
 			sendMessage(newMessage);
 			lastActivePOI.setMap(null);
-			updatePOINodeList(targetUsername);
-			createItineraryMap();
 		}
 		else
 			alert("pick up a POI!");
@@ -121,10 +120,8 @@ function updatePOINodeList(targetUsername) {
 		var newMessage = new message(null);
 		var target = itineraryGraph[targetId];
 		newMessage.make(targetId, target.title, target.content, target.latlon, "delete", targetUsername);
-		deleteNode(newMessage);
+		control(newMessage);
 		sendMessage(newMessage);
-		updatePOINodeList(targetUsername);
-		createItineraryMap();
 	});
 }
 
@@ -153,10 +150,14 @@ function createItineraryMap() {
 		while(curId != null && curId != "1") {
 			var POI = itineraryGraph[curId].getMarker();
 			placeMarker(POI, map);
-			if (lastPOI != null) {
-				addLineBasic(lastPOI, POI);
+			if(itineraryGraph[curId].userInfoList[name].death.opcnt == 0x3fffffff) {
+				POIMap[itineraryGraph[curId].latlon]
+			} else {
+				if (lastPOI != null) {
+					addLineBasic(lastPOI, POI);
+				}
+				lastPOI = POI;
 			}
-			lastPOI = POI;
 			curId = itineraryGraph[curId].userInfoList[name].nextId;
 		}
 	}

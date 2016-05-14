@@ -12,7 +12,7 @@ function isHappenedBefore(sv1, sv2) {
 			return false;
 		}
 	} else if (sv1.user != username && sv2.user != username) { // R->R(different user)
-		if (message1.SRN <= message2.lastUpdateSRN) {
+		if (sv1.SRN <= sv2.lastUpdateSRN) {
 			return true;
 		}
 		else {
@@ -124,9 +124,15 @@ function add(message) {
 	realPrevious.userInfoList[targetUser].nextId = current.identifier;
 	current.userInfoList[targetUser].nextId = nextId;
 	current.userInfoList[targetUser].birth = sv;   // id could be null
-	current.userInfoList[targetUser].death = INFINITE;
+	current.userInfoList[targetUser].death = getMyINFINITE(message.user);
 	itineraryGraph[activity.identifier] = current;
 	itineraryGraph[realPreviousId] = realPrevious;
+	
+	if(POIMap[message.latlon] == null) {
+		POIMap[message.latlon] = activity.getMarker();
+	} else {
+		alert("exist poi");
+	}
 };
 
 function deleteNode(message) {
@@ -163,4 +169,14 @@ function rangeScan(previous, targetUser, sv) {
 		return previousId;
 	else
 		return realPreviousId;
+}
+
+function control(message) {
+	if(message.type == "add") {
+		add(message);
+	} else {
+		deleteNode(message);
+	}
+	updatePOINodeList(message.targetUser);
+	createItineraryMap();
 }

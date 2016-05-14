@@ -145,16 +145,14 @@ ws.onmessage = function(evt) {
 	if (evt.data == "Connection Established")
 		return;
 	var jsonMessage = eval("(" + evt.data + ")");
-	addUser(jsonMessage.user);
-	remoteMessageLog.push(jsonMessage);
+	var LMessage = serverToLocalMessage(jsonMessage);
+	addUser(LMessage.user);
 	// messageProcess(jsonMessage);
-	if (jsonMessage.type == "ack") {
-		remoteMessageLog[jsonMessage.timestamp] = jsonMessage.id;
+	if (LMessage.type == "ack" && LMessage.user == username) {
+		localMessageLog.ack(LMessage);
 	} else if (jsonMessage.type != "connect" && jsonMessage.type != "close") {
-//		if (isReceiveMessage() == true) {
-//			while(remoteMessageLog.getSize() != 0);
-			controlalgorithm(jsonMessage);
-//		}
+		remoteMessageLog.push(LMessage);
+		
 	}
 };
 

@@ -36,7 +36,7 @@ function Queue() {
 	};
 	
 	this.get = function(index) {
-		if(index < tail)
+		if(index < this.tail)
 			return this.list[index];
 		return null;
 	}
@@ -48,7 +48,7 @@ function Queue() {
 	}
 	
 	this.ack = function(message) {
-		if(list[ackIndex].user != message.user || list[ackIndex].opcnt != message.opcnt) {
+		if(this.list[ackIndex].user != message.user || list[ackIndex].opcnt != message.opcnt) {
 			alert("wrong ack!");
 			return;
 		}

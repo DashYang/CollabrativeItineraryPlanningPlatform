@@ -1,6 +1,11 @@
 var INFINITE = new stateVector(0x3fffffff,username,0x3fffffff,0x3fffffff);
 var orginalSV = new stateVector(-1,"root",-1,-1);
 
+function getMyINFINITE(username) {
+	return new stateVector(0x3fffffff,username,0x3fffffff,0x3fffffff);
+}
+
+POIMap = new Object();
 itineraryGraph = new Object();
 function Activity(id,title, content,latlon) {
 	this.title = title;
