@@ -6,6 +6,34 @@ function getMyINFINITE(username) {
 }
 
 POIMap = new Object();
+ArrowMap = new Object();
+
+function Arrow(identifier,line) {
+	this.identifier = identifier;
+	this.line = line;
+	this.userList = new Object();
+	
+	this.insert = function(user) {
+		if(userList[user] == null)
+			userList[user] == 0;
+		else
+			userList[user] += 1;
+	}
+}
+
+function POItem(latlon, marker) {
+	this.latlon = latlon;
+	this.marker = marker;
+	this.userList = new Object();
+	
+	this.insert = function(user) {
+		if(userList[user] == null)
+			userList[user] == 0;
+		else
+			userList[user] += 1;
+	}
+}
+
 itineraryGraph = new Object();
 function Activity(id,title, content,latlon) {
 	this.title = title;
@@ -41,8 +69,8 @@ function Operation(activity, type, user, id, lastUpdateSRN) {
 }
 
 function message(id) {
-/**	this.SRN;
-	this.date, city, group, receiveTime, user;   // task
+	this.SRN = id;
+/**	this.date, city, group, receiveTime, user;   // task
 	this.title, content, identifier = id, latlon;   //activity, start is latitude and longtitude
 	this.type, targetUser, opcnt, lastUpdateSRN; // operation
 **/
@@ -76,6 +104,7 @@ function message(id) {
 		this.targetUser = targetUser;
 		this.opcnt = getTimestamp();
 		this.lastUpdateSRN = remoteMessageLog.getSRN();
+		localMessageLog.push(this);
 	}
 	
 	this.getActivity = function() {

@@ -50,4 +50,4 @@ function deleteUser(username) {
 	$("#userList").html(content);
 }
 
-//addUser(username);
+addUser(username);

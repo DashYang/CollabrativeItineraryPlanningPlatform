@@ -17,22 +17,22 @@ function Queue() {
 		if(data.SRN != null && data.SRN > this.maxSRN)
 			this.maxSRN = data.SRN;
 //		console.log(this.name + " push " + JSON.stringify(data));
-		this.head += 1;
+		this.tail += 1;
 	};
 
 	// pop
 	this.pop = function() {
-		if (this.head <= this.tail)
+		if (this.head >= this.tail)
 			return null;
-		var result = this.list[this.tail];
-		this.tail += 1;
+		var result = this.list[this.head];
+		this.head += 1;
 //		console.log(this.name + " pop " + JSON.stringify(result));
 		return result;
 	};
 
 	// get size
 	this.getSize = function() {
-		return this.head - this.tail;
+		return this.tail - this.head;
 	};
 	
 	this.get = function(index) {
@@ -48,11 +48,12 @@ function Queue() {
 	}
 	
 	this.ack = function(message) {
-		if(this.list[ackIndex].user != message.user || list[ackIndex].opcnt != message.opcnt) {
+		if(this.list[this.ackIndex].user != message.user || this.list[this.ackIndex].opcnt != message.opcnt) {
 			alert("wrong ack!");
 			return;
 		}
-		this.list[ackIndex].SRN = message.SRN;
+		if(this.list[this.ackIndex].SRN == null)
+			this.list[this.ackIndex].SRN = message.SRN;
 		this.ackIndex += 1;
 	}
 	

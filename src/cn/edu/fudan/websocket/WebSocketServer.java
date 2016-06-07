@@ -27,6 +27,9 @@ public class WebSocketServer {
 	private String nickname;
 	private Session session;
 	private HttpSession httpSession;
+	private Long starTime= null;
+	private int operationCnt = 0;
+
 
 	/**
 	 * @OnOpen allows us to intercept the creation of a new session. The session
@@ -54,10 +57,16 @@ public class WebSocketServer {
 		System.out.println("Message from " + session.getId() + ": " + message);
 		JSONObject operateJSON = JSONObject.fromObject(message);
 		int id = -100; // -100 error
+		
 		if (operateJSON.get("type").equals("connect")
 				|| operateJSON.get("type").equals("close")) {
 
 		} else {
+			if(starTime == null) {
+				Date dt = new Date();
+				starTime = dt.getTime();
+			}
+			operationCnt ++;
 			int timestamp = operateJSON.getInt("timestamp");
 			String date = (String) operateJSON.get("date");
 			String city = (String) operateJSON.get("city");
@@ -65,7 +74,8 @@ public class WebSocketServer {
 			String user = (String) operateJSON.get("user");
 			String type = (String) operateJSON.get("type");
 			int lastUpdateId = operateJSON.getInt("lastUpdateId");
-			long receiveTime = (long) operateJSON.get("receiveTime");
+//			long receiveTime = (long) operateJSON.get("receiveTime");
+			long receiveTime = 121354313;
 			String identifer = (String) operateJSON.get("identifier");
 			String targetUser = (String) operateJSON.get("targetUser");
 			String start = operateJSON.get("start").toString();
@@ -73,28 +83,43 @@ public class WebSocketServer {
 			String title = (String) operateJSON.get("title");
 			String content = (String) operateJSON.get("content");
 
-			System.out.println(timestamp + " " + date + " " + city + " "
-					+ group + " " + user + " " + type + " " + start + " " + end
-					+ " " + title + " " + content + " " + lastUpdateId + " "
-					+ receiveTime);
-			MessageLog messageLog = new MessageLog(timestamp, date, city, group, user, type, start, end, title, content,
-					lastUpdateId, receiveTime,identifer,targetUser);
+//			System.out.println(timestamp + " " + date + " " + city + " "
+//					+ group + " " + user + " " + type + " " + start + " " + end
+//					+ " " + title + " " + content + " " + lastUpdateId + " "
+//					+ receiveTime);
+			MessageLog messageLog = new MessageLog(timestamp, date, city,
+					group, user, type, start, end, title, content,
+					lastUpdateId, receiveTime, identifer, targetUser);
 			EntityOperation operation = messageLog;
-			id = operation.save();
+			
+//			id = operation.save();
+			id = operationCnt;
+			
+			Date dt = new Date();
+			long endTime = dt.getTime();
+			if(endTime-starTime == 0)
+				System.out.println("OPS: infinite" );
+			else
+				System.out.println("OPS:" + 1000.0*operationCnt/(endTime-starTime));
+//			operateJSON.element("OPS", 1000.0*operationCnt/(endTime-starTime));
 		}
 		try {
-			System.out.println("online User size:" + onlineUsers.size());
+//			System.out.println("online User size:" + onlineUsers.size());
 			for (Session otherUser : onlineUsers) {
 				if (otherUser != session && otherUser.isOpen()) {
-					System.out.println("send message to " + otherUser.getId());
+//					System.out.println("send message to " + otherUser.getId());
 					operateJSON.element("id", id);
+					
 					otherUser.getBasicRemote().sendText(operateJSON.toString());
 				}
 			}
-			System.out.println("send message to (local) " + session.getId());
-			operateJSON.element("id", id);
-			operateJSON.element("type", "ack");
-			session.getBasicRemote().sendText(operateJSON.toString());
+			if (!operateJSON.get("type").equals("connect")
+					&& !operateJSON.get("type").equals("close")) {
+//				System.out.println("send message to (local) " + session.getId());
+				operateJSON.element("id", id);
+				operateJSON.element("type", "ack");
+				session.getBasicRemote().sendText(operateJSON.toString());
+			}
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}

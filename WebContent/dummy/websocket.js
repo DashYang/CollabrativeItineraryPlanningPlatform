@@ -11,31 +11,14 @@ function getUrlParam(name) {
 
 var username = "";
 var myTimestamp = 0;
-var lastUpdateId = -1;
-
-function getTimestamp() {
-	myTimestamp += 1;
-	console.log("opcnt:" + myTimestamp);
-	return myTimestamp - 1;
-}
-
-$("#toIssue").click(function() {
-	if (username != "")
-		location.href = "issue.jsp?username=" + username;
-});
-
+var ok = null;
 function checkUserIdentity() {
 	username = getUrlParam("username");
-	if (username == null) {
-		alert("please log in!");
-		location.href = "index.jsp";
-	}
 }
 
 function sendMessage(message) {
 	if (isBroadMessage() == true) {
 		var sMessage = JSON.stringify(localToServerMessage(localMessageLog.pop()));
-		console.log(sMessage);
 		ws.send(sMessage);
 	}
 }
@@ -61,75 +44,49 @@ var wshostPath = localhostPath.replace("http", "ws");
 var ws = new WebSocket(wshostPath
 		+ "/CollabrativeItineraryPlanningPlatform/WebSocketServer");
 
-alert(wshostPath+ "/CollabrativeItineraryPlanningPlatform/WebSocketServer");
-
 ws.onopen = function() {
 	var jsonMessage = new Object();
-	jsonMessage["date"] = date;
-	jsonMessage["city"] = city;
-	jsonMessage["group"] = group;
 	jsonMessage["user"] = username;
 	jsonMessage["type"] = "connect";
 	var jsonMessageString = JSON.stringify(jsonMessage);
 	ws.send(jsonMessageString);
+	ok = true;
 };
-
-// 判断是否广播消息
-function isBroadMessage() {
-	var flag = $("#broadMessage").is(':checked');
-	if (flag != null && flag == true)
-		return true;
-	return false;
-}
-
-$("#broadMessage").click(function() {
-	if (isBroadMessage() == true) {
-		while (localMessageLog.getSize() > 0) {
-			var message = localMessageLog.pop();
-			var sMessage = JSON.stringify(localToServerMessage(message));
-			ws.send(sMessage);
-		}
-	}
-});
-
-// 判断是否接受消息
-function isReceiveMessage() {
-	var flag = $("#receiveMessage").is(':checked');
-	if (flag != null && flag == true)
-		return true;
-	return false;
-}
-
-$("#receiveMessage").click(function() {
-	if (isReceiveMessage() == true) {
-		while (remoteMessageLog.getSize() > 0) {
-			var message = remoteMessageLog.pop();
-			messageProcess(message);
-		}
-	}
-});
 
 ws.onmessage = function(evt) {
 	// console.log(evt.data);
 	if (evt.data == "Connection Established")
 		return;
 	var jsonMessage = eval("(" + evt.data + ")");
-	var LMessage = serverToLocalMessage(jsonMessage);
-	// messageProcess(jsonMessage);
-	if(LMessage.user != null)
-		addUser(LMessage.user);
-	if (LMessage.type == "ack" && LMessage.user == username) {
-		localMessageLog.ack(LMessage);
-	} else if (jsonMessage.type != "connect" && jsonMessage.type != "close") {
-		remoteMessageLog.push(LMessage);
-		control(LMessage);
-	}
+	var ops = jsonMessage.OPS;
+	console.log(ops);
 };
 
 ws.onclose = function(evt) {
-	deleteUser(username);
 };
 
 ws.onerror = function(evt) {
 	console.log("WebSocketError!");
 };
+
+function createDummy() {
+	var obj = new Object();
+	obj["event"]=  "add";
+	obj["timestamp"]= myTimestamp+=1;
+	obj["lastUpdateId"]= -1;
+	obj["date"]= "2016-04-30";
+	obj["city"]= "Shanghai";
+	obj["group"]= "cisl";
+	obj["user"]= username;
+	obj["type"]= "add";
+	obj["receiveTime"]= new Date().getTime();
+	obj["start"]=
+			"dum";
+	obj["title"]= "同济大学";
+	obj["content"]= "";
+	obj["identifier"]= "0";
+	obj["targetUser"]= username;
+	jsonmessage = JSON.stringify(obj);
+	console.log(jsonmessage);
+	ws.send(jsonmessage);
+}

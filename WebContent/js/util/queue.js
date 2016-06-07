@@ -43,7 +43,6 @@ function Queue() {
 		return null
 	}
 	
-	this.end()
 }
 
 

@@ -1,3 +1,4 @@
+var executeTime = new Array();
 function localToServerMessage(localMessage) {
 	var jsonMessage = new Object();
 	jsonMessage["timestamp"] = localMessage.opcnt;
@@ -26,12 +27,25 @@ function serverToLocalMessage(jsonMessage) {
 	localMessage["user"] = jsonMessage.user;
 	localMessage["type"] = jsonMessage.type;
 	localMessage["receiveTime"] = jsonMessage.receiveTime;
-	localMessage['latlon'] = eval("(" + jsonMessage.start+ ")");
+	if (typeof (jsonMessage.start) != "object")
+		localMessage['latlon'] = eval("(" + jsonMessage.start + ")");
+	else
+		localMessage['latlon'] = jsonMessage.start;
 	localMessage['title'] = jsonMessage.title;
 	localMessage["content"] = jsonMessage.content;
 	localMessage["identifier"] = jsonMessage.identifier;
 	localMessage["targetUser"] = jsonMessage.targetUser;
 	return localMessage;
+}
+
+function getExResult() {
+	var str = "";
+	for(var index in executeTime) {
+		var time = executeTime[index];
+		str += time + ",";
+	} 
+	str = str.substring(0 , str.length-1);
+	return str;
 }
 
 function loadingHistoryMessage() {
@@ -48,28 +62,41 @@ function loadingHistoryMessage() {
 		success : function(jsonData) {
 			if (jsonData.result == true) {
 				var list = jsonData.list;
+				var start = new Date().getTime();
 				for (listIndex in list) {
 					var rMessage = serverToLocalMessage(list[listIndex])
-					
-					// messageProcess(list[listIndex]);
-					if(rMessage.type == "add")
-						add(rMessage);
-					else
-						deleteNode(rMessage);
+
 					if (rMessage.user == username) {
-						if (rMessage.opcnt > myTimestamp) {
-							myTimestamp = rMessage.opcnt;
+						if (rMessage.opcnt + 1 > myTimestamp) {
+							myTimestamp = rMessage.opcnt + 1;
 						}
-						localMessageLog.push(rMessage); 
+						localMessageLog.push(rMessage);
+						localMessageLog.pop();
+						localMessageLog.ack(rMessage);
 					} else {
 						remoteMessageLog.push(rMessage);
 					}
+
+					// messageProcess(list[listIndex]);
+					if (rMessage.type == "add") {
+						add(rMessage);
+					} else {
+						deleteNode(rMessage);
+					}
+					
+					var end = new Date().getTime();
+					console.log(end - start)
+					executeTime.push((end - start));
 				}
+				var end = new Date().getTime();
+				console.log("restore record time:" + start + " " + end);
+				console.log("restore record time:" + (end - start));
 				updatePOINodeList(username);
 				createItineraryMap();
 			} else {
 				alert("fail");
 			}
+			
 		}
 	});
 }
@@ -96,7 +123,6 @@ $("#sendMessage").click(function() {
 function updateMessageList(user, content) {
 	var pastContent = $("#messagelist").html();
 	var date = new Date();
-	$("#messagelist").html(
-			pastContent + user + /**" 于 " + date.toLocaleString() + **/" says:<br>"
-					+ content + "<br>");
+	$("#messagelist").html(pastContent + user + /** " 于 " + date.toLocaleString() + * */
+	" says:<br>" + content + "<br>");
 }
